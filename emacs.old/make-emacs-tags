@@ -1,0 +1,93 @@
+#! /bin/sh
+#
+# File:		make-emacs-tags
+# Author:	Robert Mecklenburg
+# Created:	August 15, 1996
+# 
+# Description:	Build an emacs tags table for the entire subtree rooted
+#		at the current directory.  This table includes all C, C++,
+#		Lisp, Emacs Lisp, and Makefiles.  In addition, the file
+#		name for each file is added as a tag to the table.
+#               A list of directories can be supplied as command-line
+#               arguments.  If they are supplied the TAGS table will be
+#               built from those directories.  Otherwise '.' is used.  
+#
+# (c) Copyright 1996, Parametric Technology Corporation, all rights reserved.
+#
+
+TAG_DIRS=
+
+if test "$1" = ""; then
+	TAG_DIRS="."
+else
+	TAG_DIRS=
+	while test "$1" != ""
+	do
+		TAG_DIRS="$TAG_DIRS $1"
+		shift
+	done
+fi
+
+# We have etags write to stdout and place it in /tmp rather than the
+# local directory because there is a funny bug in NT find which tries
+# (and fails) to open TAGS and then crashes.  We write to stdout
+# because on NT etags crashes when -o is given /tmp/TAGS!
+#
+find $TAG_DIRS \( -name patch-files  -prune -o		\
+                  -name 'patch-file-dir*'  -prune -o	\
+		  -name obj -prune -o                   \
+		  -name run -prune -o                   \
+                  -name '*.[cChHyl]' -o	        	\
+	          -name '*.[ch]xx' -o			\
+                  -name '*.lisp' -o			\
+                  -name '*.lex' -o			\
+        	  -name '*.cl' -o			\
+	          -name '*.el' -o			\
+	          -name 'Makeflags-*' -o		\
+	          -name '*makerules' -o			\
+	          -name '*akefile' \) 			\
+		  -size +0                              \
+                  -print |		                \
+etags	--regex="/(def-foreign-[^ ]*[ \t]*(.*/"		\
+	--regex="/(defstruct (.*/"			\
+	--regex="/(defmethod.*)/"			\
+	--regex="/^typedef .*/"				\
+	--regex="/^.*_DECLARE(.*/"                      \
+	-C -I -o - - > /tmp/TAGS.$$
+
+# etags fails to recognize "(def... (name".  I believe the paren
+# before the name causes the problem.  Therefore we add these by hand.
+# Unfortunately, this causes some lisp functions to be entered twice,
+# fix this here.  We scan for tag lines (those containing \177) and
+# compare the character offset.  If the current offset is equal to the
+# previous offset, skip the line.
+#
+tags_uniq="tags-uniq.$$"
+cat > /tmp/$tags_uniq <<'EOF'
+while (<>)
+{
+  /(a)/;					# Reset $1, grrr.
+  $dup = (/^\(def.*\177(.*)/ && $last eq $1);	# Test char offset
+  $last = $1;					# Remember current offset
+  next if $dup;					# Skip if duplicate
+  print $_;
+}
+EOF
+
+curr_dir=`pwd`
+cd /tmp
+perl $tags_uniq TAGS.$$ > TAGS
+if test $?; then
+  # Add the file name for each file to the tags table as a tag.
+  perl $SYS_SRC/cm/scripts/add-file-names-to-tags > TAGS.new
+
+  # Expand container typedefs declared with CTYPE_DECLARE macros to tags.
+  cp TAGS.new TAGS
+  perl $SYS_SRC/cm/scripts/expand-container-decls-to-tags > TAGS.new
+    
+  # There appears to be a bug in NT perl's rename function.
+  cp TAGS.new $curr_dir/TAGS
+  rm -f TAGS.new
+fi
+
+rm -f TAGS.$$ TAGS $tags_uniq

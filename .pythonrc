@@ -1,0 +1,42 @@
+# .pythonrc
+
+# To enable tab-completion and history between sessions in the interactive python shell:
+
+try:
+	import readline
+except ImportError:
+	print "Module readline not available."
+
+else:
+	import atexit
+	import os
+	import rlcompleter
+
+	# Add tab completion.
+	if os.uname()[0] == "Darwin" and 'libedit' in readline.__doc__:
+                # OSX
+                readline.parse_and_bind ("bind ^I rl_complete")
+        else:
+                # Linux
+                readline.parse_and_bind("tab: complete")
+
+	# Restore our command-line history, and save it when Python exits.
+	historyPath = os.path.expanduser("~/.python_history")
+
+	def save_history(historyPath=historyPath):
+		import readline
+		readline.write_history_file(historyPath)
+
+	if os.path.exists(historyPath):
+		readline.read_history_file(historyPath)
+
+	atexit.register(save_history)
+#	 del os, atexit, readline, rlcompleter, save_history, historyPath
+
+
+#import sys
+#sys.path.append('/Users/cam/tools/pyhdf/lib/python2.7/site-packages')
+
+#import sys
+#sys.ps1 = '\001\033[96m\002>>> \001\033[0m\002'
+#sys.ps2 = '\001\033[96m\002... \001\033[0m\002'

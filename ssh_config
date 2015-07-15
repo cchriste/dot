@@ -1,0 +1,115 @@
+Host jupiter
+    HostName jupiter.sci.utah.edu
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
+Host remus
+    HostName remus.chpc.utah.edu
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+    User u0033785
+
+Host ash
+    HostName ash.chpc.utah.edu
+    User u0033785
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host ash2
+    HostName ash2.chpc.utah.edu
+    User u0033785
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host yoga
+    HostName yogaisforeveryone.org
+    User escapesa
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
+Host shell
+    HostName shell.cs.utah.edu
+    User cchriste
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
+Host atlantis
+    HostName atlantis.sci.utah.edu
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
+Host atlanta
+    HostName atlanta.sci.utah.edu
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
+Host valhalla
+    User cameron
+    HostName valhalla.sci.utah.edu
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
+Host aurora
+    HostName aurora.crsim.utah.edu
+    User u0033785
+
+Host surface 
+    HostName surface.llnl.gov
+#    PreferredAuthentications publickey
+#    IdentityFile ~/.ssh/id_rsa
+    User cchriste
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host github
+    HostName github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
+Host pcmdi11
+    HostName pcmdi11.llnl.gov
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+    User cam
+
+Host shaheen
+     HostName shaheen1.hpc.kaust.edu.sa
+     PreferredAuthentications publickey
+     IdentityFile ~/.ssh/id_rsa
+     User cameron
+
+Host neser
+     HostName neser.hpc.kaust.edu.sa
+     PreferredAuthentications publickey
+     IdentityFile ~/.ssh/id_rsa
+     User cameron
+
+Host pascucci
+     HostName 10.68.59.67
+     PreferredAuthentications publickey
+     IdentityFile ~/.ssh/id_rsa
+     User christct
+
+Host visusmac
+     HostName mliumacmini.sci.utah.edu
+     PreferredAuthentications publickey
+     IdentityFile ~/.ssh/id_rsa
+     User visus
+
+Host k
+    HostName k.aics.riken.jp 
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/k
+    User a03205
+
+Host uintahwiki
+    HostName uintah.sci.utah.edu
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/uintahwiki_rsa
+    Port 910
+
+Host *
+IdentityFile ~/.ssh/id_rsa

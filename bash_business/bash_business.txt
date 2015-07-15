@@ -1,0 +1,506 @@
+doutriaux@atlanta:[~]:[77]>cat git/bash_files/.bashrc 
+#!/bin/bash
+
+source ${HOME}/.bashrepo >& /dev/null
+
+[ -z "$PS1" ] && return
+
+shopt -s extglob
+shopt -s dotglob
+shopt -s cdspell
+shopt -s histappend
+shopt -s checkwinsize
+
+set -o emacs
+#set -o ignoreeof
+export IGNOREEOF=1
+
+set show-all-if-ambiguous on                                                    
+set visible-stats on 
+
+export HISTCONTROL=erasedups
+export HISTSIZE=1000000
+export HISTFILESIZE=1000000
+export TMOUT=0
+
+export BASH_COMPLETION=${BASHGITREPO}/bash_completion >& /dev/null
+export BASH_COMPLETION_DIR=${BASHGITREPO}/bash_completion.d >& /dev/null
+source $BASH_COMPLETION >& /dev/null
+source $BASH_COMPLETION_DIR/* >& /dev/null
+
+export PATH=.:${HOME}/bin:/usr/local/bin:/usr/local/sbin:/bin:/usr/bin:/usr/sbin:/sbin:/usr/X11R6/bin:${HOME}/workspace/android-sdk/tools:${HOME}/git/bin:/usr/local/git/bin
+export LANG="C"
+
+export EDITOR='vi'
+export TERM="xterm-color"
+export CLICOLOR="true"
+export LSCOLORS=exfxcxdxbxegedabagacad
+#export LSCOLORS=dxgxcxdxbxcgcdabagacad
+#export LSCOLORS="no=00:fi=00:di=34:ln=01;36:pi=40;33:so=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;31:*.tar=01;*.class=01;22;*.jar=46;01:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:"
+
+export GREP_OPTIONS='--color=auto'
+#export GREP_COLOR='00;38;5;226'
+
+export TEMP="/tmp/`whoami`"
+export TMP=${TEMP}
+mkdir -p ${TEMP}
+
+export PROJECT=${HOME}/projects
+export DEVTOOLS=${HOME}/devtools
+
+export CDPATH=.:..:$HOME/:$PROJECT/
+
+#-------------------------------------------
+echo 
+echo "You are logged into a `uname -s` Machine...(Version `uname -r`)"
+
+export LOCAL_PATH=${HOME}/exec
+case `uname` in 
+    Darwin*)
+      sw_vers
+      ;;
+    Linux*)
+      export LOCAL_PATH=$LOCAL_PATH:/export/kou1/projects/git/bin
+esac
+
+echo "Host => `uname -n`"
+echo
+echo " Hardware: `uname -m`...."
+echo " Using Emacs Bindings..."
+uptime
+echo 
+#fortune
+RED="\[\033[00;31m\]"
+GREEN="\[\033[00;32m\]"
+BLUE="\[\033[00;34m\]"
+GOLD="\[\033[00;33m\]"
+NOCOLOR="\[\033[00;00m\]"
+
+#-------------------------------------------
+case "$TERM" in
+    xterm | xterm-color)
+	#PS1='${debian_chroot:+($debian_chroot)}\[\033[00;33m\]\u@\h\[\033[00m\]:[\033[00;31m\]\W\[\033[00m\]]$(__git_ps1 ":[\033[00;32m\]%s\033[00m\]]"):\[[\!]> '
+	PS1='${debian_chroot:+($debian_chroot)}'${BLUE}'\u@\h'${NOCOLOR}':['${RED}'\w'${NOCOLOR}']:'${GREEN}'$(__git_ps1 "[%s]")'${NOCOLOR}'['${GOLD}'\!'${NOCOLOR}']>'
+	#PS1='${debian_chroot:+($debian_chroot)}\[\033[00;33m\]\u@\h\[\033[00m\]:$(__git_ps1 "[\033[00;32m\]%s\033[00m\]]"):[\033[00;31m\]\W\[\033[00m\]]\[[\!]> '
+	PROMPT_COMMAND='history -a ; echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
+	;;
+    *)
+	PS1='${debian_chroot:+($debian_chroot)}\u@\h:[\W]:[\!]> '
+	;;
+esac
+#-----------------------------
+
+#System-wide resources....
+export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home
+export ANT_HOME=/usr/share/ant
+export M2_HOME=/usr/local/maven
+export MANPATH=/usr/local/share/man:/usr/man:/usr/local/man:/usr/share/man
+#Account scope resources
+export CATALINA_HOME=$DEVTOOLS/tomcat
+export TOMCAT_HOME=$CATALINA_HOME
+export AXIS_HOME=$DEVTOOLS/axis
+export JAXB_HOME=$DEVTOOLS/jwsdp/jaxb
+export GROOVY_HOME=$DEVTOOLS/groovy
+export JRUBY_HOME=$DEVTOOLS/jruby
+
+
+export ROOTPATH=$PATH:$JAVA_HOME/bin:$ANT_HOME/bin:$M2_HOME/bin:$GROOVY_HOME/bin:$JRUBY_HOME/bin:$LOCAL_PATH
+
+export CLASS_ROOT=$HOME/classes
+export JAR_PATH=$HOME/classes/jars
+
+#export CLASSPATH=.:$CLASS_ROOT:$(find $JAR_PATH | xargs | perl -pe 's/ /:/g')
+
+#-----------------------------
+source ${BASHGITREPO}/.bash_aliases
+source ${BASHGITREPO}/.bash_functions
+#-----------------------------
+
+# ************ CDAT/PYTHON
+export PYTHONSTARTUP=${HOME}/.pythonrc
+export PYTHONPATH=${CDATBUILDS}/lib/python-${PYVER}/site-packages
+
+
+complete -o default -o nospace -F _git_checkout gci
+complete -o default -o nospace -F _git_checkout gco
+complete -o default -o nospace -F _git_checkout gls
+
+#setpy latest
+doutriaux@atlanta:[~]:[78]>cat git/bash_files/.
+./                ../               .bash_aliases     .bash_functions   .bashrc           .bashrepo_sample  .git/             .gitignore        
+doutriaux@atlanta:[~]:[78]>cat git/bash_files/.bash_aliases 
+#/bin/bash
+
+#****************
+#Python Related...
+#****************
+alias pb="python setup.py build install"
+alias p=cdat
+alias py='env PYTHONSTARTUP="" python -i -c "import rlcompleter; import readline; readline.parse_and_bind(\"tab: complete\")" '
+
+#****************
+#Java Related...
+#****************
+alias axis_cp="source $HOME/bin/axis_classpath"
+alias kawa="java kawa.repl"
+alias beanshell="java bsh.Interpreter"
+alias bsh="java bsh.Interpreter"
+#alias javac="javac -d ${CLASS_ROOT}"
+alias compile="javac -nowarn -d ${CLASS_ROOT}"
+alias jikes="jikes -nowarn -d ${CLASS_ROOT}"
+alias jruby-console="java -jar $JAR_PATH/jruby-console.jar"
+
+
+#****************
+#maintenance aliases
+#****************
+alias full_backup="sudo rsync -xrlptgoEv --progress --delete / /Volumes/Malcolm_HD_Backup"
+
+#****************
+#General
+#****************
+
+alias backup="rsync --archive --verbose --progress --stats --compress --rsh=/usr/bin/ssh --recursive --times --perms --links --update"
+alias src='source ~/.bashrc'
+alias beroot='sudo -s'
+alias c=clear
+alias dirs='dirs -v'
+alias vt='set term=vt100'
+alias NODISP='unsetenv DISPLAY'
+alias .='echo $cwd'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ls='ls -h'
+alias ll='ls -l'
+alias dir=ll
+alias lst='ls -FAlt | less'
+alias lr='ls -rt'
+alias lrt='ls -lrt'
+alias lrtl='ls -lrt | less'
+alias lart='ls -lart'
+alias lartl='ls -lart | less'
+alias la='ls -FA'
+alias lf='ls -Fg'
+alias lc='ls -Cg'
+alias a=alias
+alias u=unalias
+alias h=history
+alias hist=history
+alias pd=pushd
+alias push=pushd
+alias pop=popd
+alias md=mkdir
+alias rd=rmdir
+alias cls=clear
+alias clr=clear
+
+alias screen='screen -R'
+alias screen_here='screen -d'
+alias screen_HERE='screen -D'
+alias pss='ps auxw | grep cue'
+alias whom='who | sort | more'
+alias wsm='w | sort | more '
+alias amacs='/Applications/Aquamacs.app/Contents/MacOS/Aquamacs'
+#alias emacs='emacs -bg black -fg wheat '
+#alias e='/usr/bin/emacs -nw'
+alias close='eject -t'
+
+#alias xterm='xterm -sb -sl 5000 -bg black -fg wheat &'
+alias xterm='xterm -sb -sl 5000 -bg grey5 -fg wheat &'
+
+alias findsrc="find -name '*.c' -o -name '*.h' -o -name '*.cc' -o -name '*.hpp' -o -name '*.cpp' -o -name '*.py'"
+alias find="find . -name "
+
+
+alias mysql_dev="mysql -hlocalhost -udevuser -pdevpassword"
+alias mysql_root="mysql -hlocalhost -uroot -pshaalein"
+
+#-----------------------
+#	Machine/Host Aliases
+#-----------------------
+
+#### Lawrence Livermore National Labs (LLNL) ####
+
+#----
+alias omar="ssh -Y omar.llnl.gov" #Laptop
+alias meryem="ssh -Y meryem.llnl.gov" #Laptop
+alias lgm="ssh -Y legrandmont.llnl.gov" #Allen's Linux box
+
+
+#### GIT ####
+alias gci='git commit'
+alias gco='git checkout'
+alias gls='git branch'
+alias gcm='git checkout master'
+alias gcd='git checkout devel'
+alias gbr='git branch'
+alias gpush='git push'
+alias gpsh='git push'
+alias gps='git push'
+alias gpull='git pull'
+alias gpll='git pull'
+alias gpl='git pull'
+alias glog='git log'
+alias glg='git log'
+alias gitweb='git instaweb -d webrick'
+alias gstat='git status'
+alias gst='git status'
+#ghelp() { 
+#    ssh latimer.llnl.gov git help $@ | less 
+#}
+
+doutriaux@atlanta:[~]:[79]>cat git/bash_files/.bash
+.bash_aliases     .bash_functions   .bashrc           .bashrepo_sample  
+doutriaux@atlanta:[~]:[79]>cat git/bash_files/.bash_functions 
+#!/bin/bash
+
+
+#-------------
+# Trashing Files...
+#-------------
+export TRASH=$HOME/.Trash
+
+trash() {
+  #${TRASH:?"You Should Set The Trash directory"}
+  export ${TRASH:=$HOME/.Trash} >& /dev/null
+  mkdir -p $TRASH
+  mv "$*" $TRASH
+  echo trashed:["$*"]
+}
+
+show_trash() {
+    local FOO=${TRASH:?"Must First Set Trash Directory!"}
+    pushd $TRASH >& /dev/null
+    du -sh *
+    du -sh .
+    popd >& /dev/null
+}
+
+empty_trash() {
+    ${TRASH:?"Must First Set Trash Directory!"}
+    pushd $TRASH >& /dev/null
+    du -sh *
+    du -sh .
+    echo -n "Are you sure you want to empty the trash? [Yy/n] "
+    read OK
+    if [ "$OK" = y ] || [ "$OK" = Y ]; then
+	/bin/rm -rf $TRASH/*
+    else
+	echo "Trash not emptied"
+    fi
+    popd >& /dev/null
+}
+
+ltrash() {
+    mkdir -p ./.Trash
+    mv "$*" ./.Trash
+    echo "locally trashed:[$*]"
+}
+
+show_local_trash() {
+    pushd ./.Trash >& /dev/null
+    du -sh * 2> /dev/null
+    du -sh . 2> /dev/null
+    popd >& /dev/null    
+    return 0;
+}
+
+empty_local_trash() {
+    ls ./.Trash >& /dev/null
+    [ $? != 0 ] && return 0
+    show_local_trash
+    local doit="n"
+    read -p "Are you sure you want to empty trash in `pwd` [y/N] ? " doit
+    doit=$(echo $doit | tr 'A-Z' 'a-z')
+    if [ "$doit" = "y" ]; then
+	#echo "rm -v -rf ./.Trash/*" 2> /dev/null
+	rm -v -rf ./.Trash/* 2> /dev/null
+    fi    
+}
+
+show_all_trash() {
+    pushd ~/ >& /dev/null
+    echo "Searching all trash files below `pwd`"
+    for f in `find . -name '.Trash' `; do 
+	pushd ${f%/*} >& /dev/null
+	printf "\nFound Trash in ${f%/*}\n"
+	[ $? != 0 ] && continue
+	show_local_trash
+	popd >& /dev/null
+    done
+    popd >& /dev/null
+}
+
+empty_all_trash() {
+    pushd ~/ >& /dev/null
+    echo "Emptying all trash files below `pwd`"
+    local doit="n"
+    for f in `find . -name '.Trash' `; do 
+	pushd ${f%/*} >& /dev/null
+	[ $? != 0 ] && continue
+	empty_local_trash
+	popd >& /dev/null
+    done
+    popd >& /dev/null
+}
+
+#-------------
+# Stashing Files...
+#-------------
+export STASH=$HOME/.stash
+
+stash() {
+  #${STASH:?"You Should Set The Stash directory"}
+  export ${STASH:=$HOME/.stash} >& /dev/null
+  mkdir -p $STASH
+  mv "$*" $STASH
+  echo stashed:[$*]
+}
+
+show_stash() {
+    FOO=${STASH:?"Must First Set Stash Directory!"}
+    pushd $STASH >& /dev/null
+    du -sh *
+    du -sh .
+    popd >& /dev/null
+}
+
+empty_stash() {
+    ${STASH:?"Must First Set Stash Directory!"}
+    pushd $STASH >& /dev/null
+    du -sh *
+    du -sh .
+    echo -n "Are you sure you want to empty the stash? [Yy/n] "
+    read OK
+    if [ "$OK" = y ] || [ "$OK" = Y ]; then
+	/bin/rm -rf $STASH/*
+    else
+	echo "Stash not emptied"
+    fi
+    popd >& /dev/null
+}
+
+
+#-------------
+# Archiving Potentially Imporant Files...
+#-------------
+export ARCHIVE=${HOME}/.my_archive
+
+archive() {
+    export ${ARCHIVE:=${HOME}/.my_archive} >& /dev/null
+    mkdir -p $ARCHIVE 
+    mv "$*" $ARCHIVE
+    echo archived:[$*]
+}
+
+show_archive() {
+    FOO=${ARCHIVE:?"Must First Set Archive Directory!"}
+    pushd $ARCHIVE >& /dev/null
+    du -sh *
+    du -sh .
+    popd >& /dev/null
+}
+
+#---
+
+find_in_code() {
+    pushd ${PROJECT_HOME:=$(pwd)} >& /dev/null
+    echo "find . -name \*.cc -o -name \*.h -o -name \*.cpp -o -name \*.hpp -o -name \*.py | xargs grep -i $*"
+    find . -name \*.cc -o -name \*.h -o -name \*.cpp -o -name \*.hpp -o -name \*.py -o \*.java | xargs grep -i $*
+    popd >& /dev/null
+}
+
+cterm() {
+    /usr/X11R6/bin/xterm -sb -sl 10000 -bg grey8 -fg $* &
+}
+
+homefiles() {
+
+    ls -l /etc/hosts
+    sudo rm /etc/hosts
+    sudo ln -s /etc/hosts.home /etc/hosts
+    ls -l /etc/hosts
+
+    #ls -l /etc/fstab
+    #sudo rm /etc/fstab
+    #sudo ln -s /etc/fstab.home /etc/fstab
+    #ls -l /etc/fstab
+}
+
+workfiles() {
+    ls -l /etc/hosts
+    sudo rm /etc/hosts
+    sudo ln -s /etc/hosts.cuill /etc/hosts
+    ls -l /etc/hosts
+
+    #ls -l /etc/fstab
+    #sudo rm /etc/fstab
+    #sudo ln -s /etc/fstab.cuill /etc/fstab
+    #ls -l /etc/fstab
+}
+
+pdflatex() {
+    echo ssh martin \(cd ${2:-`pwd | cut -f4- -d"/"`}\; pdflatex ${1:-"gavin-bell-cv.tex"}\)
+    ssh martin \(cd ${2:-`pwd | cut -f4- -d"/"`}\; pdflatex ${1:-"gavin-bell-cv.tex"}\)
+}
+
+dopostlist() {
+    a=$(readlink `which postlist`)
+    b=${a%/*}
+    pushd ${b} >& /dev/null
+    ./postlist
+    popd >& /dev/null
+}
+
+#Ex: If I wanted to rename a bunch of files so that each file is renamed individually
+# rename_file_set '*-s*.vmdk' Dnode Snode
+#
+#This can also be accomplished directly on the command line by doing:
+# %> for f in `/bin/ls *-s*.vmdk`; do mv -v $f ${f//inpat/outpat}"; done
+#
+mvfileset() {
+
+    exp=$1
+    inpat=$2
+    outpat=$3
+    
+    echo 
+    echo "${exp} : ${inpat} -> ${outpat}"
+    echo
+    for infile in `ls ${exp}`; do
+	outfile=$(eval "echo ${infile} | sed 's/${inpat}/${outpat}/'")
+	mv -v ${infile} ${outfile}
+    done
+}
+
+setpy() {
+ source ${CDATBUILDS}/$1/bin/setup_cdat.sh
+}
+
+setpy_old() {
+   export PYVER=2.7
+   export CDAT=${CDATBUILDS}/$1
+   export EXTERNALS=${CDAT}/Externals
+   export PATH=${CDAT}/bin:${CDAT}//Library/Frameworks/Python.framework/Versions/${PYVER}/bin:${CDAT}/Python.framework/Versions/${PYVER}/bin:${EXTERNALS}/bin:${EXTERNALS}/NetCDF/bin:${EXTERNALS}/HDF5/bin:$ROOTPATH
+   export PYTHONPATH=${CDAT}/lib/python${PYVER}/site-packages
+   export LD_LIBRARY_PATH=${CDAT}//Library/Frameworks/Python.framework/Versions/${PYVER}/lib/python${PYVER}/site-packages/vcs:${EXTERNALS}/lib:${EXTERNALS}/lib/paraview-3.11:${CDAT}/lib:${LD_LIBRARY_PATH}
+}
+
+setenv () {
+  echo "YOU ARE IN BASH!"
+  echo "Trying to fix this for you by running:"
+  echo "export $1=$2"
+  export $1=$2
+}
+doutriaux@atlanta:[~]:[80]>cat git/bash_files/.bashrepo_sample 
+#!/usr/bin/env bash
+
+export BASHGITREPO="/git/bash_files"
+export CDATBUILDS="/lgm/cdat"
+export PYVER=2.7
+source /git/git/contrib/completion/git-completion.bash
+
+
+doutriaux@atlanta:[~]:[81]>

@@ -1,0 +1,52 @@
+[user]
+	name = Cameron Christensen
+	email = cam@sci.utah.edu
+[core]
+	autocrlf = input
+[github]
+	user = cchriste
+	token = acc6ee09955c48613d4ecaf78a8f733d
+[color]
+  ui = auto
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+[color]
+  ui = true
+[color "diff"]
+  whitespace = red reverse
+[core]
+  whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+	excludesfile = /Users/cam/.gitignore
+[mergetool "emerge"]
+	path = /Users/cam/bin/emacs-for-mergetool.sh
+[merge]
+	tool = emerge
+[difftool "emerge"]
+	path = /Users/cam/bin/emacs-for-difftool.sh
+[diff]
+	tool = emerge
+[url "git://uv-cdat.llnl.gov/windfield.git"]
+[url "http://github.com/ajdawson/eof2.git"]
+[url "http://github.com/ajdawson/eofs.git"]
+[url "http://github.com/UV-CDAT/scimake.git"]
+[url "http://github.com/ajdawson/windspharm.git"]
+[url "git://uv-cdat.llnl.gov/windfield.git"]
+[url "http://github.com/ajdawson/eof2.git"]
+	insteadof = git://github.com/ajdawson/eof2.git
+[url "http://github.com/ajdawson/eofs.git"]
+	insteadof = git://github.com/ajdawson/eofs.git
+[url "http://github.com/UV-CDAT/scimake.git"]
+	insteadof = git://github.com/UV-CDAT/scimake.git
+[url "http://github.com/ajdawson/windspharm.git"]
+	insteadof = git://github.com/ajdawson/windspharm.git

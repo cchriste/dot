@@ -1,0 +1,105 @@
+#ifdef COLOR
+*customization: -color
+#endif
+
+emacs*Background: DarkSlateGray
+emacs*Foreground: Wheat
+emacs*pointerColor: GreenYellow
+emacs*cursorColor: Yellow
+emacs*bitmapIcon: on
+emacs*font: -adobe-courier-bold-r-normal--12-120-75-75-m-70-iso8859-1
+emacs.geometry: 80x25
+
+Seyon.modems: /dev/modem
+
+xterm*background: Black
+xterm*foreground: Wheat
+xterm*cursorColor: Orchid
+xterm*reverseVideo: false
+xterm*scrollBar: true
+xterm*reverseWrap: true
+xterm*font: -misc-fixed-medium-r-normal--10-100-75-75-c-60-iso8859-1
+xterm*fullCursor: true
+xterm*scrollTtyOutput: off
+xterm*scrollKey: on
+;xterm*VT100.Translations: #override\n\
+;	<KeyPress>Prior : scroll-back(1,page)\n\
+;	<KeyPress>Next : scroll-forw(1,page)
+xterm*titleBar: false
+
+xterm_color*background: Black
+xterm_color*foreground: Wheat
+xterm_color*cursorColor: Orchid
+xterm_color*reverseVideo: false
+xterm_color*scrollBar: true
+xterm_color*saveLines: 5000
+xterm_color*reverseWrap: true
+xterm_color*font: -misc-fixed-medium-r-normal--10-100-75-75-c-60-iso8859-1
+xterm_color.geometry: 80x25+20+20
+xterm_color*fullCursor: true
+xterm_color*scrollTtyOutput: off
+xterm_color*scrollKey: on
+;xterm_color*VT100.Translations: #override\n\
+;	<KeyPress>Prior : scroll-back(1,page)\n\
+;	<KeyPress>Next : scroll-forw(1,page)
+xterm_color*titleBar: false
+
+nxterm*background: Black
+nxterm*foreground: White
+nxterm*cursorColor: Orchid
+nxterm*reverseVideo: false
+nxterm*scrollBar: true
+nxterm*saveLines: 5000
+nxterm*reverseWrap: true
+nxterm*font: -misc-fixed-medium-r-normal--10-100-75-75-c-60-iso8859-1
+nxterm.geometry: 80x25+20+20
+nxterm*fullCursor: true
+nxterm*scrollTtyOutput: off
+nxterm*scrollKey: on
+;nxterm*VT100.Translations: #override\n\
+;	<KeyPress>Prior : scroll-back(1,page)\n\
+;	<KeyPress>Next : scroll-forw(1,page)
+nxterm*titleBar: false
+
+rxvt*background: black
+rxvt*foreground: white
+rxvt*cursorColor: red
+rxvt*reverseVideo: false
+rxvt*scrollBar: true
+rxvt*saveLines: 5000
+rxvt*reverseWrap: true
+rxvt*font: -misc-fixed-medium-r-normal--10-100-75-75-c-60-iso8859-1
+rxvt.geometry: 80x25
+rxvt*fullCursor: true
+rxvt*scrollTtyOutput: off
+rxvt*scrollKey: on
+rxvt*scrollBar_right: true
+;rxvt*backgroundPixmap: /users/pkoshevoy/pic/starfield.xpm
+rxvt*backgroundPixmap: /users/pkoshevoy/pic/linux.xpm
+;rxvt*VT100.Translations: #override\n\
+;	<KeyPress>Prior : scroll-back(1,page)\n\
+;	<KeyPress>Next : scroll-forw(1,page)
+rxvt*titleBar: false
+
+aterm*background: black
+aterm*foreground: white
+aterm*cursorColor: red
+aterm*reverseVideo: false
+aterm*scrollBar: true
+aterm*saveLines: 5000
+aterm*reverseWrap: true
+aterm*font: -misc-fixed-medium-r-normal--10-100-75-75-c-60-iso8859-1
+aterm.geometry: 80x25
+aterm*fullCursor: true
+aterm*scrollTtyOutput: off
+aterm*scrollKey: on
+aterm*scrollBar_right: true
+;aterm*backgroundPixmap: /users/pkoshevoy/pic/sony.xpm
+aterm*backgroundPixmap: /users/pkoshevoy/pic/starfield.xpm
+;aterm*VT100.Translations: #override\n\
+;	<KeyPress>Prior : scroll-back(1,page)\n\
+;	<KeyPress>Next : scroll-forw(1,page)
+aterm*titleBar: false
+
+xload*background: black
+xload*foreground: green
