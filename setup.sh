@@ -11,13 +11,13 @@
 pushd ~
 
 # backup existing dotfiles
-cp .emacs .emacs.dot.bak
-cp .bashrc .bashrc.dot.bak
-cp .profile .profile.dot.bak
-cp .pythonrc .pythonrc.dot.bak
-cp .gitconfig .gitconfig.dot.bak
-cp .gitignore .gitignore.dot.bak
-cp .screenrc .screenrc.dot.bak
+cp .emacs .emacs.$$.bak
+cp .bashrc .bashrc.$$.bak
+cp .profile .profile.$$.bak
+cp .pythonrc .pythonrc.$$.bak
+cp .gitconfig .gitconfig.$$.bak
+cp .gitignore .gitignore.$$.bak
+cp .screenrc .screenrc.$$.bak
 
 # symbolic link to new source-controlled dotfiles
 ln -s dot/.emacs .emacs
