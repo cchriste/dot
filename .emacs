@@ -23,12 +23,24 @@
 ;; don't ignore (ViSUS) .idx files for completion
 (setq completion-ignored-extensions (delete ".idx" completion-ignored-extensions))
 
-;; MATLAB
-(setq load-path (cons (substitute-in-file-name "$HOME/dot/emacs/matlab") load-path))
-(load-library "matlab-load")
-(matlab-cedet-setup)
-;;(setq matlab-shell-command-switches '("-nojvm"))
-;;(setq matlab-shell-command-switches '("-nosplash"))
+;; MATLAB (OSX)
+;; check OS type
+(cond
+ ((string-equal system-type "windows-nt") ; Microsoft Windows
+  (progn
+    (message "Microsoft Windows")))
+ ((string-equal system-type "darwin") ; Mac OS X
+  (progn
+    (message "Mac OS X")
+    (setq load-path (cons (substitute-in-file-name "$HOME/dot/emacs/matlab") load-path))
+    (load-library "matlab-load")
+    (matlab-cedet-setup)
+    ;;(setq matlab-shell-command-switches '("-nojvm"))
+    ;;(setq matlab-shell-command-switches '("-nosplash"))
+    ))
+ ((string-equal system-type "gnu/linux") ; linux
+  (progn
+    (message "Linux"))))
 
 ;; fix drag-and-drop in osx
 (define-key global-map [ns-drag-file] 'my-ns-open-files)

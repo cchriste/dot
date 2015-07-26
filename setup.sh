@@ -12,6 +12,7 @@ pushd ~
 
 # backup existing dotfiles
 mv .emacs .emacs.$$.bak
+mv emacs emacs.$$.bak
 mv .bashrc .bashrc.$$.bak
 mv .profile .profile.$$.bak
 mv .pythonrc .pythonrc.$$.bak
@@ -20,6 +21,7 @@ mv .gitignore .gitignore.$$.bak
 mv .screenrc .screenrc.$$.bak
 
 # symbolic link to new source-controlled dotfiles
+ln -s dot/emacs emacs
 ln -s dot/.emacs .emacs
 ln -s dot/.bashrc .bashrc
 ln -s dot/.profile .profile
