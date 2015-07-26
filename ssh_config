@@ -23,6 +23,13 @@ Host ash2
     ControlPath /tmp/%r@%h:%p
     ControlPersist 12h
 
+Host cooley
+    HostName cooley.alcf.anl.gov
+    User camc
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
 Host yoga
     HostName yogaisforeveryone.org
     User escapesa
