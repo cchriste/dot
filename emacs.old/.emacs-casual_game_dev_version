@@ -1,0 +1,612 @@
+
+(defvar running-on-windows (memq system-type '(windows-nt cygwin)))
+(defvar running-on-linux (not running-on-windows))
+(defvar running-on-x (eq window-system 'x))
+(defvar running-on-z (string-equal system-name "zaurus.chicago"))
+
+;; ---------------------------------------------------
+;; Global Platform-Agnostic settings
+
+;; font colors
+;; On most terminals these colors are going to snap
+;; to the nearest of 8 values.
+(defun my-color-theme()
+  "A color scheme"
+	(interactive "")
+  (setq default-frame-alist
+        '((foreground-color . "white")
+          (background-color . "black")
+					(background-mode  . dark)))
+  (set-cursor-color "green")
+  (set-mouse-color "white")
+  (custom-set-faces
+	 '(default														 ((t (:background "black"		:foreground "white" ))))
+	 '(cursor														 ((t (:background "white"		:foreground "black" ))))
+	 '(highlight													 ((t (:background "yellow"  :foreground "black"))))
+	 '(region														 ((t (:background "blue"		:foreground "white"))))
+	 '(isearch														 ((t (:background "blue"    :foreground "white"))))
+	 '(trailing-whitespace								 ((t (:background "blue"))))
+	 '(font-lock-comment-face             ((t (:foreground "red"))))
+	 '(font-lock-function-name-face       ((t (:foreground "orange"))))
+	 '(font-lock-builtin-face             ((t (:foreground "magenta"))))
+	 '(font-lock-string-face              ((t (:foreground "green"))))
+	 '(font-lock-constant-face            ((t (:foreground "cyan"))))
+	 '(font-lock-keyword-face             ((t (:foreground "yellow"))))
+	 '(font-lock-type-face                ((t (:foreground "green"))))
+	 '(font-lock-variable-name-face       ((t (:foreground "blue"))))
+	 '(font-lock-warning-face						 ((t (:foreground "red"))))))
+
+(defun x-color-theme()
+  "A color scheme"
+  (interactive "")
+	;;	(set-face-font 'default "-*-proggycleancp-*-*-*-*-*-*-*-*-*-*-*-*")
+  (setq default-frame-alist
+        '((background-mode  . dark)
+					;;					(top . 2)
+					;;					(left . 2)
+					(unsplittable)
+					(modeline . t)
+					(width . 141)
+					(height . 54)
+;;					(name . "test name")
+					(display-type . color)
+					(scroll-bar-width)
+					(cursor-type . box)
+					;;					(auto-lower)
+					;;					(auto-raise)
+					;;					(buffer-predicate)
+					(tool-bar-lines . 0)
+					(menu-bar-lines . 0)
+					(scroll-bar-background . "grey75")
+					(scroll-bar-foreground)
+					(line-spacing)
+					(screen-gamma)
+					(border-color . "black")
+					(cursor-color . "#7ac470")
+					(mouse-color . "white")
+					(background-color . "#000000")
+					(foreground-color . "#f0f0f0")
+					(vertical-scroll-bars)
+					(internal-border-width . 1)
+					(border-width . 2)
+					(font . "-windows-ProggyCleanCP-medium-r-normal-sans-13-80-96-96-c-70-iso8859-1")))
+	;;  (set-cursor-color "green")
+	;;  (set-mouse-color "white")
+	(let ((black "#000000")
+				(red "#a35757")
+				(green "#7ac470")
+				(yellow "#dfe14e")
+				(orange "#ef6d22")
+				(blue "#5083b2")
+				(magenta "#b781ac")
+				(cyan "#b0b5d2")
+				(white "#f0f0f0"))
+		(custom-set-faces
+		 `(default														((t (:background ,black		:foreground ,white ))))
+		 `(cursor														  ((t (:background ,green		:foreground ,black ))))
+		 `(highlight													((t (:background ,yellow   :foreground ,black))))
+		 `(region														  ((t (:background ,blue			:foreground ,white))))
+		 `(isearch														((t (:background ,blue			:foreground ,white))))
+		 `(trailing-whitespace								((t (:background ,blue))))
+		 `(font-lock-comment-face             ((t (:foreground ,red))))
+		 `(font-lock-function-name-face       ((t (:foreground ,orange))))
+		 `(font-lock-builtin-face             ((t (:foreground ,magenta))))
+		 `(font-lock-string-face              ((t (:foreground ,green))))
+		 `(font-lock-constant-face            ((t (:foreground ,cyan))))
+		 `(font-lock-keyword-face             ((t (:foreground ,yellow))))
+		 `(font-lock-type-face                ((t (:foreground ,green))))
+		 `(font-lock-variable-name-face       ((t (:foreground ,blue))))
+		 `(font-lock-warning-face						  ((t (:foreground ,red))))
+		 `(hi-blue														((t (:foreground ,blue))))
+		 `(hi-green														((t (:foreground ,green))))
+		 `(hi-yellow													((t (:foreground ,yellow))))
+		 `(hi-red-b														((t (:foreground ,red))))
+		 `(hi-pink														((t (:foreground ,magenta)))))))
+
+(if running-on-x
+		(x-color-theme)
+	(my-color-theme))
+
+
+;; UTF-8
+;; (setq locale-coding-system 'utf-8)
+;; (set-terminal-coding-system 'utf-8)
+;; (set-keyboard-coding-system 'utf-8)
+;; (set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+
+(setq default-enable-multibyte-characters t)
+
+;; Follow symlinks to the real file, w/o prompting us.
+(setq vc-follow-symlinks t)
+
+;; We like to see more message history in the *Messages* buffer
+;; than the default 50 lines.
+(setq message-log-max 200)
+
+;; Lose the menu bar, tool bar, and scroll bar.
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(tool-bar-mode -1)
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+;;(setq-default show-trailing-whitespace t) ;; use M-x delete-trailing-whitespace to kill it
+
+;;;; Useful key strokes
+(global-set-key "\C-c\C-g" 'goto-line)
+
+;; Expand any hidden blocks on goto-line
+(defadvice goto-line (after expand-after-goto-line
+														activate compile)
+
+	"hideshow-expand affected block when using goto-line in a collapsed buffer"
+	(save-excursion
+		(hs-show-block)))
+
+;; Expand any hidden blocks on goto-char
+;; (defadvice goto-char (after expand-after-query-replace
+;; 														activate compile)
+
+;; 	"hideshow-expand affected block when using goto-char in a collapsed buffer"
+;; 	(save-excursion
+;; 		(hs-show-block)))
+
+;; ;; Expand any blocks we are searching through
+;; (defadvice re-search-forward (after expand-after-re-search-forward
+;; 																		activate compile)
+;; nil)
+;; 	"hideshow-expand affected block when using re-search-forward in a collapsed buffer"
+;; 	(save-excursion
+;; 		(hs-show-block)))
+
+;; ;; Expand any blocks we are searching through
+;; (defadvice search-forward (after expand-after-search-forward
+;; 																 activate compile)
+;; nil)
+;; 	"hideshow-expand affected block when using search-forward in a collapsed buffer"
+;; 	(when (hs-already-hidden-p)
+;; 		(hs-show-block)))
+
+
+;; Don't show the normal startup message stuff
+(setq inhibit-startup-message t)
+
+;; No backup files.
+(setq make-backup-files nil)
+
+;; If we are only scrolling 5 lines or less, only scroll
+;; enough to put those lines on the screen.
+(setq scroll-conservatively 5)
+
+;; Don't wrap long lines
+(setq-default truncate-lines t)
+;; except in text-mode
+;; TODO
+
+;; We don't need to access the TAGS buffer.
+																				;(setq make-tags-files-invisible t)
+
+;; I don't know exactly what these variables
+;; do, but some config files won't load unless
+;; I up the values.
+(setq max-lisp-eval-depth 30000)
+(setq max-specpdl-size 30000)
+
+;; When we open two buffers with the same filename
+;; we want the names to look like myfile|somedir1
+;; and myfile|somedir2 instead of the default myfile<2>
+;; TODO: The problem with this is that it changes the first
+;; file's name, even if we only open the 2nd one for a
+;; few seconds.
+;;(require 'uniquify)
+;;(setq uniquify-buffer-name-style 'post-forward)
+
+;; Show current function in modeline
+(setq which-func-modes '(actionscript-mode python-mode emacs-lisp-mode c-mode c++-mode perl-mode cperl-mode makefile-mode sh-mode fortran-mode java-mode))
+(which-function-mode t)
+
+;; Display column number in mode line
+(column-number-mode t)
+
+;; Change all yes/no questions to y/n type
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Enable font lock
+(global-font-lock-mode t)
+
+;; Automatically wrap text in text-mode
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+;; Do NOT wrap text in these modes
+(add-hook 'html-mode-hook 'turn-off-auto-fill)
+(add-hook 'sgml-mode-hook 'turn-off-auto-fill)
+
+;; Ignore case during tab completion
+(setq completion-ignore-case t)
+
+;; Indent the case expression in
+;; a switch statement.
+(c-set-offset 'case-label '+)
+(c-set-offset 'statement-cont '--)
+
+;; Indention
+(setq standard-indent 2)
+
+;; Global tab setting
+(setq-default tab-width 2)
+
+;; Set tab stops (2 spaces per tab)
+(setq tab-stop-list (let ((tabsize 2)
+													(lst '()))
+											(dotimes (i 80)
+												(push (+ tabsize (* i tabsize)) lst))
+											(reverse lst)))
+
+;; Auto-indent setting in c-modes.
+(defun my-c-mode-setup ()
+  (setq c-basic-offset 2))
+(add-hook 'c-mode-common-hook 'my-c-mode-setup)
+
+;; ctrl-up and ctrl-down scroll w/o moving cursor.
+(defun scroll-down-keep-cursor ()
+	;; Scroll the text one line down while keeping the cursor.
+	(interactive)
+	(scroll-down 1))
+
+(defun scroll-up-keep-cursor ()
+	;; Scroll the text one line up while keeping the cursor.
+	(interactive)
+	(scroll-up 1))
+
+;; TODO: Get this to work on the Z.
+
+;; Bind the functions.
+;; *These are the console mode versions of C-up and C-down.
+(global-set-key "\eOa" 'scroll-down-keep-cursor)
+(global-set-key "\eOb" 'scroll-up-keep-cursor)
+;; Set the X versions, too, just in case we ever use those.
+(global-set-key [C-up] 'scroll-down-keep-cursor)
+(global-set-key [C-down] 'scroll-up-keep-cursor)
+
+(add-to-list 'load-path "~/.emacs.d/site-lisp")
+
+;; Help for switching buffers.
+;;(iswitchb-mode 1)
+;;(require 'ido)
+;;(ido-mode t)
+
+
+;;; igrep site-lisp configuration
+
+(setq load-path (cons "/usr/share/emacs/site-lisp/igrep" load-path))
+
+(autoload 'igrep "igrep"
+  "*Run `grep` PROGRAM to match EXPRESSION in FILES..." t)
+(autoload 'igrep-find "igrep"
+  "*Run `grep` via `find`..." t)
+(autoload 'igrep-visited-files "igrep"
+  "*Run `grep` ... on all visited files." t)
+(autoload 'dired-do-igrep "igrep"
+  "*Run `grep` on the marked (or next prefix ARG) files." t)
+(autoload 'dired-do-igrep-find "igrep"
+  "*Run `grep` via `find` on the marked (or next prefix ARG) directories." t)
+(autoload 'Buffer-menu-igrep "igrep"
+  "*Run `grep` on the files visited in buffers marked with '>'." t)
+(autoload 'igrep-insinuate "igrep"
+  "Define `grep' aliases for the corresponding `igrep' commands." t)
+(autoload 'grep "igrep"
+  "*Run `grep` PROGRAM to match EXPRESSION in FILES..." t)
+(autoload 'egrep "igrep"
+  "*Run `egrep`..." t)
+(autoload 'fgrep "igrep"
+  "*Run `fgrep`..." t)
+(autoload 'agrep "igrep"
+  "*Run `agrep`..." t)
+(autoload 'grep-find "igrep"
+  "*Run `grep` via `find`..." t)
+(autoload 'egrep-find "igrep"
+  "*Run `egrep` via `find`..." t)
+(autoload 'fgrep-find "igrep"
+  "*Run `fgrep` via `find`..." t)
+(autoload 'agrep-find "igrep"
+  "*Run `agrep` via `find`..." t)
+
+
+;;; emacs-w3m site-lisp configuration
+
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/emacs-w3m")
+
+(autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
+(autoload 'w3m-browse-url "w3m" "Interface for w3m on Emacs." t)
+(autoload 'w3m-find-file "w3m" "w3m interface function for local file." t)
+(autoload 'w3m-search "w3m-search" "Search QUERY using SEARCH-ENGINE." t)
+(autoload 'w3m-weather "w3m-weather" "Display weather report." t)
+(autoload 'w3m-antenna "w3m-antenna" "Report chenge of WEB sites." t)
+(autoload 'w3m-namazu "w3m-namazu" "Search files with Namazu." t)
+
+(setq w3m-icon-directory "/usr/share/emacs-w3m/icon")
+
+(setq browse-url-browser-function #'w3m-browse-url)
+
+
+
+;; ------------------------------------------------------------------
+;; Machine specific options
+
+(unless running-on-z
+	;; Lookup Lisp stuff in an info buffer.
+	(global-set-key [(f1)]
+									'(lambda ()
+										 (interactive)
+										 (ignore-errors
+											 (info (concatenate 'string "(gcl) " (thing-at-point 'symbol))))))
+
+	;; Hit F2 to jump to the previous buffer.
+	(defun switch-to-previous-buffer ()
+		(interactive)
+		(switch-to-buffer (other-buffer)))
+
+	(global-set-key [(f2)] 'switch-to-previous-buffer)
+
+	;; Use firefox as our browser.
+	(setq browse-url-netscape-program "firefox")
+
+  (global-set-key [f12] 'igrep-find)
+
+  ;; frame title : set to visited file name (w/o path)
+  (setq frame-title-format "%b")
+
+  ;; allow use of the mouse
+  (xterm-mouse-mode t)
+
+	;; Package to convert line endings in files.
+  (require 'eol-conversion))
+
+(cond
+ (running-on-z
+  (print "Loading zaurus config.")
+
+	;; TODO: This doesn't load if we ssh to another host.
+
+	;; We want the BS key to delete backwards instead of forward.
+	(normal-erase-is-backspace-mode 0)
+
+  ;; There's no backquote key on the Z.
+  (global-set-key "\C-xq" '(lambda () (interactive)(insert "`")))
+
+  ;; Undo for the Z.
+  (global-set-key "\C-xz" '(lambda () (interactive)(undo))))
+
+ (running-on-linux
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;; non-Zaurus Linux stuff
+  (print "Loading linux config.")
+
+	;;; cedet site-lisp configuration
+;; 	(load "/usr/share/emacs/site-lisp/cedet/common/cedet")
+;; 	(require 'semantic-sb)
+;; 	(load "wisent-actionscript")
+;; 	(setq semantic-load-turn-useful-things-on t)
+
+;; 	;; 	(setq semanticdb-project-roots
+;; 	;; 				(list "/home/astro/work_for_hire/squidbillies/app/src/as"))
+
+;; 	(defun semantic-default-actionscript-setup ()
+;; 		"Set up a buffer for parsing ActionScript files."
+;; 		(semantic-install-function-overrides
+;; 		 '((lex . semantic-actionscript-lex))))
+
+;; 	(define-mode-overload-implementation
+;; 		semantic-lex actionscript-mode
+;; 		(start end &optional depth length)
+;; 		(semantic-lex-default start end 1 length))
+
+	;; 	(semantic-lex START END &optional DEPTH LENGTH)
+
+  (setq icon-title-format  "%b")
+
+
+	(when (string-equal system-name "bean.chicago")
+
+		;; Icicles is a package that let's us cycle through
+		;; different options in the mini-buffer.
+		(require 'icicles)
+
+		(let ((black "#000000")
+					(red "#a35757")
+					(green "#7ac470")
+					(yellow "#dfe14e")
+					(orange "#ef6d22")
+					(blue "#5083b2")
+					(magenta "#b781ac")
+					(cyan "#b0b5d2")
+					(white "#f0f0f0"))
+			(custom-set-faces
+			 `(icicle-Completions-instruction-1	((t (:foreground ,blue))))
+			 `(icicle-Completions-instruction-2	((t (:foreground ,red))))
+			 `(icicle-prompt-suffix	((t (:foreground ,blue))))
+			 `(icicle-root-highlight-Completions	((t (:foreground ,blue))))))
+
+		;; Audio files
+		(load "pt-audio" t)
+
+		;;; nxml site-lisp configuration
+
+ 		(add-to-list 'load-path "/usr/share/emacs/site-lisp/nxml-mode")
+ 		(load "/usr/share/emacs/site-lisp/nxml-mode/rng-auto.el")
+
+ 		(add-to-list 'auto-mode-alist
+								 '("\\.\\(xml\\|xsl\\|xsd\\|rng\\|xhtml\\)\\'" . nxml-mode))
+
+
+		;;; psgml site-lisp configuration
+
+;; 		(autoload 'sgml-mode "psgml" "Major mode to edit SGML files." t)
+;; 		(autoload 'xml-mode "psgml" "Major mode to edit XML files." t)
+
+;;  		(setq auto-mode-alist
+;;  					(cons '("\\.\\(xml\\|html\\|xhtml\\)\\'" . xml-mode)
+;;  								auto-mode-alist))
+
+;; 		(setq sgml-catalog-files '("CATALOG" "/etc/sgml/catalog"))
+
+;; 		(setq sgml-set-face t)
+;; 		(setq sgml-auto-activate-dtd t)
+;; 		(setq sgml-indent-data t)
+
+;; 		(setq sgml-markup-faces '(
+;; 															(start-tag . font-lock-keyword-face)
+;; 															(end-tag . font-lock-keyword-face)
+;; 															(comment . font-lock-comment-face)
+;; 															(pi . font-lock-constant-face) ;; <?xml?>
+;; 															(sgml . font-lock-type-face)
+;; 															(doctype . bold)
+;; 															(entity . italic)
+;; 															(shortref . font-lock-reference-face)))
+
+		;;; Planner
+		(add-to-list 'load-path "/usr/share/emacs/site-lisp/planner")
+		(require 'planner)
+		(require 'planner-publish)
+
+		(setq planner-project "AustinPlanner")
+
+		(setq muse-project-alist
+					'(("AustinPlanner"
+						 ("~/planner"	;; where your Planner pages are located
+							:default "TaskPool"	;; use value of `planner-default-page'
+							:major-mode planner-mode
+							:visit-link planner-visit-link)
+     
+						 ;; This next part is for specifying where Planner pages
+						 ;; should be published and what Muse publishing style to
+						 ;; use.  In this example, we will use the XHTML publishing
+						 ;; style.
+     
+						 (:base "planner-xhtml"
+										;; value of `planner-publishing-directory'
+										:path "~/published_plans"))))
+
+		(setq planner-use-day-pages nil))
+
+	;; Don't require tramp for akira.
+	(unless (string-equal system-name "akira.pettomato.net")
+		;; tramp site-lisp configuration
+		(add-to-list 'load-path "/usr/share/emacs/site-lisp/tramp")
+		(setq auto-save-file-name-transforms
+					`(("\\`/[^/]*:\\(.+/\\)*\\(.*\\)"
+						 ,(expand-file-name "\\2" temporary-file-directory))))
+		(require 'tramp)
+
+		;; The function file-remote-p will be included in
+		;; Emacs 22, so this is just a placeholder.
+		(defun org-file-remote-p (file)
+			"Test whether FILE specifies a location on a remote system.
+Return non-nil if the location is indeed remote.
+For example, the filename \"/user <at> host:/foo\" specifies a location
+on the system \"/user <at> host:\"."
+			(cond ((fboundp 'file-remote-p)
+						 (file-remote-p file))
+						((fboundp 'tramp-handle-file-remote-p)
+						 (tramp-handle-file-remote-p file))
+						((and (boundp 'ange-ftp-name-format)
+									(string-match ange-ftp-name-format file))
+						 t)
+						(t nil)))
+
+		;; I don't think this will work until Emacs 22
+		(defconst my-mode-line-buffer-identification
+			(list
+			 '(:eval
+				 (if (org-file-remote-p default-directory)
+						 (let ((host-name	(tramp-file-name-host
+															 (tramp-dissect-file-name default-directory))))
+							 (if (string-match "^[^0-9][^.]*\\(\\..*\\)" host-name)
+									 (substring host-name 0 (match-beginning 1))
+									 (concat host-name ":%12b")))
+						 "%12b"))))
+
+		(setq-default
+		 mode-line-buffer-identification
+		 my-mode-line-buffer-identification)
+
+		(add-hook
+		 'dired-mode-hook
+		 '(lambda ()
+			 (setq
+				mode-line-buffer-identification
+				my-mode-line-buffer-identification)))
+
+
+		(defface find-file-remote-header-face
+				'((t (:foreground "white" :background "red3")))
+			"*Face use to display header-lines for files opened remotely.")
+
+		(add-hook
+		 'find-file-hooks
+		 '(lambda ()
+			 (when (org-file-remote-p default-directory)
+				 (let* ((warning "WARNING: EDITING REMOTE FILE!")
+								(space (+ 6 (- (frame-width) (length warning))))
+								(bracket (make-string (/ space 2) ?-))
+								(warning (concat bracket warning bracket)))
+					 (setq header-line-format
+								 (propertize warning 'face 'find-file-remote-header-face))))))
+					)))
+
+;; ------------------------------------------------------------------
+;; Document-specific customizations
+;; The 't' means that it won't complain
+;; if these files don't exist.
+(load "elisp-config" t)
+
+(load "lisp-config" t)
+
+;; actionscript
+(autoload 'actionscript-mode "actionscript-mode" "Major mode for actionscript." t)
+;; Activate actionscript-mode for any files ending in .as
+(add-to-list 'auto-mode-alist '("\\.as$" . actionscript-mode))
+;; Load our actionscript-mode extensions.
+(eval-after-load "actionscript-mode" '(load "as-config"))
+
+;; Python
+(autoload 'python-mode "python-mode" "Python editing mode." t)
+(add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
+(add-to-list 'interpreter-mode-alist '("python" . python-mode))
+(eval-after-load "python-mode" '(load "python-config" t))
+
+;; ------------------------------------------------------------------
+;; Generic utility functions.
+(defun filenames-to-string (string-func)
+	"Grab all the marked files, strip the directory, and then map string-func to them
+to produce a string."
+	(mapconcat string-func (map 'list 'file-name-nondirectory (dired-get-marked-files)) ""))
+
+(defun filenames-to-pic-config ()
+	(interactive)
+	(filenames-to-string (lambda (x)(princ (format "(\"%s\" . ((orientation . 0)(caption . \"\")))\n" x)))))
+;; ------------------------------------------------------------------
+
+;; Save/Restore sessions
+(desktop-load-default)
+(setq 
+; desktop-enable t
+ desktop-missing-file-warning	nil
+ desktop-globals-to-save 
+ (list
+	'tags-file-name
+	'tags-table-list
+	'(file-name-history . 25)
+	'(minibuffer-history . 25)
+	)
+ desktop-buffers-not-to-save							; don't save these
+ (concat "^\\("
+				 (mapconcat
+					'identity
+					'( "nn\\.[0-9]+" ".*\\.log" "(ftp)" "^tags" "^TAGS" ".bbdb" 
+						 "\\*info\\*"
+						 )
+					"\\|") "\\)$")
+ )
+(add-to-list 'desktop-modes-not-to-save 'Info-mode)
+(add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
+(condition-case nil (desktop-read))

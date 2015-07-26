@@ -1,0 +1,791 @@
+;;; My name.
+(defvar *author* "Cameron Christensen")
+(setq user-full-name *author*)
+
+;;; Mail address.
+(setq user-mail-address "cchristensen@ptc.com") ; Used by ange-ftp.
+
+;;; Add my emacs libs to load path.
+(setq load-path (cons (substitute-in-file-name "$HOME/emacs/site-lisp") load-path))
+
+;;; $Id: startup-template.el,v 0.5 1993/05/31 23:49:29 ceder Exp $
+;;; Support for the elisp library elib.
+(setq load-path (append (list "/users/cchristensen/emacs/site-lisp/elib")
+			load-path))
+
+;; load pcl-cvs setup code
+(add-to-list 'load-path "/users/cchristensen/emacs/site-lisp/pcl-cvs")
+(load "pcl-cvs-startup")
+
+;;; Load PTC Developer Libraries ....
+(let ((group-init nil)
+      tmp)
+  (cond ((and (getenv "WORK_SRC")
+	      (file-exists-p (setq tmp (substitute-in-file-name
+					"$WORK_SRC/cm/emacs/group-init.el"))))
+	 (setq group-init tmp))
+	((and (getenv "SYS_SRC")
+	      (file-exists-p (setq tmp (substitute-in-file-name
+					"$SYS_SRC/cm/emacs/group-init.el"))))
+	 (setq group-init tmp))
+	((eq window-system 'x)
+	 (setq group-init "/sst/r21src/cm/emacs/group-init.el"))
+	((eq window-system 'win32)
+	 (setq group-init "t:/r21src/cm/emacs/group-init.el")))
+  (if (not (and group-init
+		(load group-init t)))
+    (message "Load module `group-init' not found.")))
+
+;; CVS customizations.
+(add-hook 'cvs-mode-hook
+	  '(lambda ()
+	     (setq cvs-inhibit-copyright-message t) ; Turn off copyright msg
+	     (setq cvs-auto-remove-handled-directories t))) ; Remove dirs!
+
+;; Specify that newlines are NOT to be added when scrolling beyond the
+;; end of a buffer with C-n.
+(setq next-line-add-newlines nil
+      line-number-mode       t)
+
+(autoload 'find-other-source-file "find-other-file")
+(global-set-key "\C-ca" 'find-other-source-file)
+
+;;; Start emacs server for emacsclient to use.
+(server-start)
+
+;;;
+;; Clearcase stuff
+;;;
+
+;; load clearcase setup code
+;; (add-to-list 'load-path (substitute-in-file-name "$HOME/emacs"))
+(load "clearcase")
+
+(defun clearcase-fprop-latest-version (file)
+  "For FILE, return its \"latest-version\" ClearCase property."
+  (let ((re "\\(.*/\\).*")
+	(str (clearcase-fprop-version file)))
+    (if (string-match re str)
+      (concat (substring str (match-beginning 0) (match-end 1))
+              "LATEST"))))
+
+(defun clearcase-ediff-latest-current-buffer ()
+  "Use Ediff to compare a version in the current buffer against its
+predecessor."
+  (interactive)
+  (clearcase-ediff-file-with-version buffer-file-name
+                                     (clearcase-fprop-latest-version
+buffer-file-name)))
+
+(global-set-key "\C-cd" 'clearcase-ediff-latest-current-buffer)
+(global-set-key "\C-cn" 'clearcase-ediff-named-version-current-buffer)
+
+; A shortcut for checking out/in the current buffer:
+; CTRL-c-o
+(global-set-key "\C-co" 'clearcase-toggle-read-only)
+
+; A shortcut for diffing the current buffer against predecessor
+; CTRL-c-d
+(global-set-key "\C-cp" 'clearcase-ediff-pred-current-buffer)
+
+; FreeForm specific environment options:
+(setq-default clearcase-suppress-confirm t)
+(setq-default clearcase-suppress-checkout-comments t)
+(setq-default clearcase-checkout-switches "-unreserved")
+
+;;;
+;; End Clearcase stuff
+;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; From ~mecklen/.emacs.  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Revert the current buffer without asking first.
+(defun fast-revert-buffer ()
+"Revert the buffer from the original file without asking."
+  (interactive)
+  (revert-buffer t t))
+(global-set-key "\C-cr" 'fast-revert-buffer)
+
+;;
+;; Automatically starts a cxx or hxx file for you.
+;;
+;;; Load header comment code.
+(autoload 'make-header "header"  "Mode dependent header generator" t)
+(autoload 'make-new-header "header"  "Mode dependent header generator" t)
+(autoload 'make-function-header "header"  "Mode dependent header generator" t)
+
+;;; Auto insert mode.
+(require 'autoinsert)
+(setq auto-insert-alist 
+  (append (list '("\\.hxx\\'" . make-new-header)
+		'("\\.h\\'" . make-new-header)
+                '("\\.cxx\\'" . make-header))
+          auto-insert-alist))
+(auto-insert-mode 1)
+
+;;; dbx mode hook
+(add-hook 'dbx-mode-hook
+	  '(lambda ()
+	    (gud-def gud-finish "step up" "\C-f"
+	     "Finish executing current function.")))
+
+;;; Fake a default value for running dbx by modifying its history.
+(setq gud-dbx-history (list "dbx $WORK_RUN/xtop"))
+
+;;; Enable auto-save mode for the current buffer and save frequently.
+(defun auto-track ()
+  (interactive)
+  (auto-save-mode 1)
+  (make-variable-buffer-local 'auto-save-interval)
+  (setq auto-save-interval 4)
+  (message buffer-auto-save-file-name))
+
+;;; Toggle truncation of lines.
+(defun toggle-truncate-lines ()
+  "Toggle line truncation in the current window."
+  (interactive)
+  (set-variable 'truncate-lines (not truncate-lines))
+  (recenter))
+(global-set-key "\C-ct"		'toggle-truncate-lines)
+
+;;; Display a frame on phldev4.
+(defun on-phldev4 ()
+  "Duplicate the current window on phldev4."
+  (interactive)
+  (make-frame-on-display "phldev4.ptc.com:0.0"))
+(global-set-key "\C-cf"         'on-phldev4)
+
+;;; Load electric buffer menu package.
+(if (load "ebuff-menu" t t)
+    (progn
+      (global-set-key "\C-x\C-b" 'electric-buffer-list)
+      (add-hook 'electric-buffer-menu-mode-hook
+		'(lambda ()
+		   (local-set-key "\C-s" 'isearch-forward)))))
+
+;;; Make underscore a normal letter.
+(add-hook 'c-mode-common-hook
+	  '(lambda ()
+	      (setq c-tab-always-indent nil)
+	      (modify-syntax-entry ?_ "w")))
+(load "c++-style")
+
+;;; Display line numbers even for large files.
+(setq line-number-display-limit 500000)
+
+;;; CVS support
+(autoload 'cvs-update "pcl-cvs" "Run a 'cvs update' from emacs." t)
+(autoload 'cvs-examine "pcl-cvs" "Run a 'cvs -n update' from emacs." t)
+(setq cvs-inhibit-copyright-message t)
+;;;(setq cvs-diff-flags '("-u" "-w" "-b"))
+(setq vc-follow-symlinks nil)		; Never follow symlinks!
+(custom-set-variables
+ '(tags-table-list (list
+		    (substitute-in-file-name "$WORK_SRC")
+		    (substitute-in-file-name "$WORK_SRC/../globalmodel")))
+ '(diff-switches "-u" t)
+ '(compile-command "ccgtm -b build -br"))
+(add-hook 'cvs-mode-hook
+	  '(lambda ()
+	     (setq cvs-auto-remove-handled-directories t)))
+
+(global-set-key "\C-c," 'tags-search)
+
+;;;;;;;;;;;;;;;;;;;
+;; Cameron will now attempt to set up some commenting helper function keys
+;; ... I know, commenting.  Bleh.
+;;;;;;;;;;;;;;;;;;;
+
+;;; Set default font.
+(set-default-font "-Misc-Fixed-Medium-R-SemiCondensed--13-120-75-75-C-60-ISO8859-1")
+
+(defun c-line()
+  (interactive)
+  (insert "//-------------------------------------------------------------------------//\n"))
+
+(defun l-comment()
+  (interactive)
+  (insert "/***************************************************************************\n"))
+
+(defun r-comment()
+  (interactive)
+  (insert "**************************************************************************/\n"))
+
+(global-set-key "\M-[" 'l-comment)
+(global-set-key "\M-]" 'r-comment)
+(global-set-key "\M-p" 'c-line)
+
+;;
+;; Most of this file commented out by <ctc>.
+;;
+;(autoload 'mc-install-write-mode "mailcrypt" nil t)
+;(autoload 'mc-install-read-mode "mailcrypt" nil t)
+;(add-hook 'mail-mode-hook 'mc-install-write-mode)
+
+;; Prevent Emacs from obeying file-local variables.
+;(setq inhibit-local-variables t
+;      enable-local-variables nil)
+
+;; Swap the Backspace and Delete keys when running outside of X11.
+;(or (and (eq window-system 'x)
+;	 (string-match "\\'19\\." emacs-version))
+;    (load "term/bobcat"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; Set up the mouse button actions so that (1) selections remain highlighted
+;;;; once made, (2) the current selection is replaced with keyboard input,
+;;;; and (3) the use of the scroll bar is simplified.
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; This is done ONLY if emacs is running under X windows.
+
+;(if (eq window-system 'x)
+
+   ;; Use the publicly-distributed "mouse-sel" package by Mike Williams
+   ;; (mike@inform.co.nz).
+
+;   (load "mouse-sel" t t)
+;   (setq mouse-sel-leave-point-near-mouse nil)
+
+   ;; Make the scroll-bars simpler by making all of the mouse buttons
+   ;; do the same thing (the standard down-mouse-2 action).  See
+   ;; "scroll-bar.el".
+
+;   (global-unset-key [vertical-scroll-bar mouse-1])
+;   (global-unset-key [vertical-scroll-bar drag-mouse-1])
+;   (global-unset-key [vertical-scroll-bar down-mouse-2])
+;   (global-unset-key [vertical-scroll-bar mouse-3])
+;   (global-unset-key [vertical-scroll-bar drag-mouse-3])
+;   (global-set-key [vertical-scroll-bar down-mouse-1] 'scroll-bar-drag)
+;   (global-set-key [vertical-scroll-bar down-mouse-2] 'scroll-bar-drag)
+;   (global-set-key [vertical-scroll-bar down-mouse-3] 'scroll-bar-drag))
+
+
+
+;; A function to tell Delete Selection mode about the given commands.
+(defun delete-selection-commands (commands type)
+  (while commands
+    (put (car commands) 'delete-selection type)
+    (setq commands (cdr commands)))
+  type)
+
+(progn
+
+  ;; Cause the region to be highlighted and prevent region-based commands
+  ;; from running when the mark isn't active.
+  (transient-mark-mode 1)
+
+  ;; Display the selection only in the current window.
+  (setq highlight-nonselected-windows nil)
+
+  ;; Specify that the selection is to be deleted on keyboard input.
+  (delete-selection-mode 1)
+
+  ;; Delete Selection mode doesn't know about a lot of the special commands
+  ;; in the language modes.  When these command are invoked, the text should
+  ;; be deleted and then the command should be run.
+  (delete-selection-commands '(reindent-then-newline-and-indent
+			       c-electric-brace c-electric-semi
+			       c-electric-pound c-electric-slash
+			       c-electric-star c-electric-colon
+			       c-tame-insert)
+			     't)
+
+  (delete-selection-commands '(fortran-abbrev-start fortran-indent-new-line
+			       fortran-electric-line-number)
+			     't)
+
+  ;; For this command, the text should be killed and then then command
+  ;; should be run.
+
+  (delete-selection-commands '(c-electric-delete) 'supersede))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; This provides customized support for writing programs in different kinds
+;;;; of programming languages.
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Load the C++ and C editing modes and specify which file extensions
+;; correspond to which modes.
+
+;(fmakunbound 'c-mode)
+;(makunbound 'c-mode-map)
+;(fmakunbound 'c++-mode)
+;(makunbound 'c++-mode-map)
+;(makunbound 'c-style-alist)
+;(autoload 'c++-mode "cc-mode" "C++ Editing Mode" t)
+;(autoload 'java-mode "cc-mode" "Java Editing Mode" t)
+;(autoload 'c-mode "cc-mode" "C Editing Mode"   t)
+
+(setq auto-mode-alist
+      (append '(("\\.C\\'" . c++-mode)
+                ("\\.cc\\'" . c++-mode)
+		("\\.cxx\\'" . c++-mode)
+		("\\.hxx\\'" . c++-mode)
+		("\\.java\\'" . java-mode)
+		("\\.c\\'" . c-mode)
+                ("\\.h\\'"  . c++-mode))
+	      auto-mode-alist))
+
+;; This function is used in various programming language mode hooks below.  It
+;; does indentation after every newline when writing a program.
+(defun newline-indents ()
+  "Bind Return to `newline-and-indent' in the local keymap."
+  (local-set-key "\C-m" 'newline-and-indent))
+
+;;
+;; Emacs should be nice and do braces like I want it to, damnit
+;;
+
+;; Tell Emacs to use the function above in certain editing modes.
+(add-hook 'lisp-mode-hook             (function newline-indents))
+(add-hook 'emacs-lisp-mode-hook       (function newline-indents))
+(add-hook 'lisp-interaction-mode-hook (function newline-indents))
+(add-hook 'scheme-mode-hook           (function newline-indents))
+(add-hook 'c-mode-hook                (function newline-indents))
+(add-hook 'c++-mode-hook              (function newline-indents))
+
+;; Fortran mode provides a special newline-and-indent function.
+(add-hook 'fortran-mode-hook
+	  (function (lambda ()
+		      (local-set-key "\C-m" 'fortran-indent-new-line))))
+
+;; Text-based modes (including mail, TeX, and LaTeX modes) are auto-filled.
+(add-hook 'text-mode-hook (function turn-on-auto-fill))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; This makes "M-x compile" smarter by trying to guess what the compilation
+;;;; command should be for the C, C++, and Fortran language modes.
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; By requiring `compile' at this point, we help to ensure that the global
+;; value of compile-command is set properly.  If `compile' is autoloaded when
+;; the current buffer has a buffer-local copy of compile-command, then the
+;; global value doesn't get set properly.
+
+;(require 'compile)
+
+;; This gives the form of the default compilation command for C++, C, and
+;; Fortran programs.  Specifying the "-lm" option for C and C++  eliminates a
+;; lot of potential confusion.
+
+;(defvar compile-guess-command-table
+;  '((c-mode       . "gcc -Wall -g %s -o %s -lm"); Doesn't work for ".h" files.
+;    (c++-mode     . "g++ -g %s -o %s -lm")	; Doesn't work for ".h" files.
+;    (fortran-mode . "f77 -C %s -o %s")
+;    )
+;  "*Association list of major modes to compilation command descriptions, used
+;by the function `compile-guess-command'.  For each major mode, the compilation
+;command may be described by either:
+;
+;  + A string, which is used as a format string.  The format string must accept
+;    two arguments: the simple (non-directory) name of the file to be compiled,
+;    and the name of the program to be produced.
+;
+;  + A function.  In this case, the function is called with the two arguments
+;    described above and must return the compilation command.")
+
+
+;; This code guesses the right compilation command when Emacs is asked
+;; to compile the contents of a buffer.  It bases this guess upon the
+;; filename extension of the file in the buffer.
+
+;(defun compile-guess-command ()
+;
+;  (let ((command-for-mode (cdr (assq major-mode
+;				     compile-guess-command-table))))
+;    (if (and command-for-mode
+;	     (stringp buffer-file-name))
+;	(let* ((file-name (file-name-nondirectory buffer-file-name))
+;	       (file-name-sans-suffix (if (and (string-match "\\.[^.]*\\'"
+;							     file-name)
+;					       (> (match-beginning 0) 0))
+;					  (substring file-name
+;						     0 (match-beginning 0))
+;					nil)))
+;	  (if file-name-sans-suffix
+;	      (progn
+;		(make-local-variable 'compile-command)
+;		(setq compile-command
+;		      (if (stringp command-for-mode)
+;			  ;; Optimize the common case.
+;			  (format command-for-mode
+;				  file-name file-name-sans-suffix)
+;			(funcall command-for-mode
+;				 file-name file-name-sans-suffix)))
+;		compile-command)
+;	    nil))
+;      nil)))
+
+;; Add the appropriate mode hooks.
+;(add-hook 'c-mode-hook       (function compile-guess-command))
+;(add-hook 'c++-mode-hook     (function compile-guess-command))
+;(add-hook 'fortran-mode-hook (function compile-guess-command))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; This creates and adds a "Compile" menu to the compiled language modes.
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;(defvar compile-menu nil
+;  "The \"Compile\" menu keymap.")
+
+;(defvar check-option-modes nil
+;  "The list of major modes in which the \"Check\" option in the \"Compile\"
+;menu should be used.")
+
+;(defvar compile-menu-modes nil
+;  "The list of major modes in which the \"Compile\" menu has been installed.
+;This list used by the function `add-compile-menu-to-mode', which is called by
+;various major mode hooks.")
+
+;; Create the "Compile" menu.
+;(if compile-menu
+;    nil
+;  (setq compile-menu (make-sparse-keymap "Compile"))
+;  ;; Define the menu from the bottom up.
+;  (define-key compile-menu [first-error] '("    First Compilation Error" .
+;					   first-compilation-error))
+;  (define-key compile-menu [prev-error]  '("    Previous Compilation Error" .
+;					   previous-compilation-error))
+;  (define-key compile-menu [next-error]  '("    Next Compilation Error" .
+;					   next-error))
+;  (define-key compile-menu [goto-line]   '("    Line Number..." .
+;					   goto-line))
+;
+;  (define-key compile-menu [goto]        '("Goto:" . nil))
+;  ;;
+;  (define-key compile-menu [indent-region] '("Indent Selection" .
+;					     indent-region))
+;
+;  (define-key compile-menu [make]         '("Make..." . make))
+;
+;  (define-key compile-menu [check-file]   '("Check This File..." . 
+;					    check-file))
+;
+;  (define-key compile-menu [compile]     '("Compile This File..." . compile))
+;  )
+
+
+;;; Enable check-file only in Fortran mode buffers
+
+;(put 'check-file 'menu-enable '(eq major-mode 'fortran-mode))
+
+
+;;; Here are the new commands that are invoked by the "Compile" menu.
+
+;(defun previous-compilation-error ()
+;  "Visit previous compilation error message and corresponding source code.
+;See the documentation for the command `next-error' for more information."
+;  (interactive)
+;  (next-error -1))
+
+;(defun first-compilation-error ()
+;  "Visit the first compilation error message and corresponding source code.
+;See the documentation for the command `next-error' for more information."
+;  (interactive)
+;  (next-error '(4)))
+
+;(defvar check-history nil)
+
+;(defun check-file ()
+;  "Run ftnchek on the file contained in the current buffer"
+;  (interactive)
+;  (let* ((file-name (file-name-nondirectory buffer-file-name))
+;	 (check-command (read-from-minibuffer
+;			 "Check command: "
+;			 (format "ftnchek %s" file-name) nil nil
+;			 '(check-history . 1))))
+;    (save-some-buffers nil nil)
+;    (compile-internal check-command "Can't find next/previous error"
+;		      "Checking" nil nil nil)))
+
+;(defun make ()
+;  "Run make in the directory of the file contained in the current buffer"
+;  (interactive)
+;  (save-some-buffers nil nil)
+;  (compile-internal (read-from-minibuffer "Make command: " "make ")
+;		    "Can't find next/previous error" "Make"
+;		    nil nil nil))
+
+
+;;; Define a function to be called by the compiled language mode hooks.
+
+;(defun add-compile-menu-to-mode ()
+;  "If the current major mode doesn't already have access to the \"Compile\"
+;menu, add it to the menu bar."
+;  (if (memq major-mode compile-menu-modes)
+;      nil
+;    (local-set-key [menu-bar compile] (cons "Compile" compile-menu))
+;    (setq compile-menu-modes (cons major-mode compile-menu-modes))
+;    ))
+
+
+;; And finally, make sure that the "Compile" menu is available in C, C++, and
+;; Fortran modes.
+
+;(add-hook 'c-mode-hook       (function add-compile-menu-to-mode))
+;(add-hook 'c++-c-mode-hook   (function add-compile-menu-to-mode))
+;(add-hook 'c++-mode-hook     (function add-compile-menu-to-mode))
+;(add-hook 'fortran-mode-hook (function add-compile-menu-to-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; Put your personal customizations next.
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Rely on .Xdefaults instead
+;;(set-foreground-color "white")
+;;(set-background-color "MidnightBlue")
+;;(set-cursor-color "Red")
+
+(setq line-number-mode             t
+;      default-major-mode           'text-mode
+      c-basic-offset               2
+      require-final-newline        t
+      c-tab-always-indent          t)
+
+(global-set-key "\M-g" 'goto-line)
+(global-set-key [f1] 'info)
+(global-set-key [f1] 'end-of-line)
+(global-set-key [home] 'beginning-of-line)
+(global-set-key [end] 'end-of-line)
+(global-set-key [C-home] 'beginning-of-buffer)
+(global-set-key [C-end] 'end-of-buffer)
+(global-set-key [delete] 'delete-char)
+
+;(setq auto-mode-alist (cons '("\\.c$" . c++-mode) auto-mode-alist))
+;;(setq auto-mode-alist (cons '("\\.cc$" . c++-mode) auto-mode-alist))
+
+(require 'font-lock)
+
+(defun turn-on-font-lock ()
+  (font-lock-mode 1))
+
+(turn-on-font-lock)
+
+(setq font-lock-maximum-decoration 1)
+
+;(defun new-redisplay()
+;  (interactive)
+;  (indent-according-to-mode)
+;  (font-lock-fontify-buffer)
+;  (recenter))
+
+;(global-set-key "\C-l" 'new-redisplay)
+
+;(copy-face font-lock-keyword-face 'punctuation-face)
+;(copy-face font-lock-keyword-face 'paren-face)
+;(copy-face font-lock-keyword-face 'comma-face)
+;(copy-face font-lock-keyword-face 'number-face)
+;(copy-face font-lock-keyword-face 'compiler-face)
+
+(set-face-foreground font-lock-comment-face "seashell")
+(set-face-foreground font-lock-string-face "Aquamarine")
+(set-face-foreground font-lock-function-name-face "burlywood")
+(set-face-foreground font-lock-keyword-face "White")
+
+;(set-face-foreground 'compiler-face "purple")
+;(set-face-foreground 'punctuation-face "purple")
+;(set-face-foreground 'number-face "RosyBrown")
+;(set-face-foreground 'comma-face "orange")
+;(set-face-foreground 'paren-face "red")
+
+(set-face-foreground font-lock-type-face "lightskyblue")
+(set-face-foreground font-lock-reference-face "seagreen1")
+;(set-face-foreground font-lock-variable-name-face "MistyRose")
+
+;(setq my-brace-face 'punctuation-face)
+;(setq my-paren-face 'paren-face)
+;(setq my-comma-face 'comma-face)
+;(setq my-number-face 'number-face)
+;(setq my-compiler-face 'compiler-face)
+
+;(setq java-keywords
+;      '( "\\<extends\\>" "\\<synchronized\\>"
+;	("\\<boolean\\>" . font-lock-type-face)))
+
+;(setq new-keywords
+;      '(
+;	("[{}]" . my-brace-face)
+;	("\\<[0123456789]+\\>" . my-number-face)))
+
+;(eval-after-load "font-lock"
+;		 '(setq c-font-lock-keywords-3
+;			(append c-font-lock-keywords-3 new-keywords)))
+
+;(eval-after-load "font-lock"
+;		 '(setq c++-font-lock-keywords-3
+;			(append c++-font-lock-keywords-3 new-keywords)))
+
+
+;(eval-after-load "font-lock"
+;		 '(setq java-font-lock-keywords-3
+;			(append c++-font-lock-keywords-3 java-keywords)))
+
+;(add-hook 'java-mode-hook 'turn-on-font-lock)
+;(add-hook 'java-mode-hook
+;	  '(lambda ()
+;	     (make-local-variable 'font-lock-defaults)
+;	     (setq font-lock-keywords java-font-lock-keywords-3)))
+
+;(defun set-dave () (c-set-style "dave"))
+;(defun set-dave-java () (c-set-style "davejava"))
+
+;(add-hook 'c-mode-hook 'set-dave)
+;(add-hook 'c++-mode-hook 'set-dave)
+;(add-hook 'java-mode 'set-dave-java)
+
+(add-hook 'c-mode-hook 'turn-on-font-lock)
+(add-hook 'c++-mode-hook 'turn-on-font-lock)
+(add-hook 'text-mode-hook 'turn-on-font-lock)
+(add-hook 'pascal-mode-hook 'turn-on-font-lock)
+
+;;(make-face-unitalic font-lock-string-face)
+;(set-face-underline-p font-lock-string-face nil)
+;; (make-face-underline font-lock-string-face nil t)
+
+;;  (set-face-underline-p font-lock-string-face nil)
+;;(make-face-bold font-lock-comment-face nil t)
+;(make-face-unitalic font-lock-comment-face nil t)
+;;(make-face-unitalic font-lock-function-name-face nil t)
+;; (make-face-bold font-lock-comment-face nil t)
+
+;; Add custom stuff to keyword.
+;(put 'upcase-region 'disabled nil)
+
+;; Emacs-w3 configuration stuff
+;(autoload 'w3-preview-this-buffer "w3" "WWW Previewer" t)
+;(autoload 'w3-follow-url-at-point "w3" "Find document at pt" t)
+;(autoload 'w3 "w3" "WWW Browser" t)
+;(autoload 'w3-open-local "w3" "Open local file for WWW browsing" t)
+;(autoload 'w3-fetch "w3" "Open remote file for WWW browsing" t)
+;(autoload 'w3-use-hotlist "w3" "Use shortcuts to view WWW docs" t)
+;(autoload 'w3-show-hotlist "w3" "Use shortcuts to view WWW docs" t)
+;(autoload 'w3-follow-link "w3" "Follow a hypertext link." t)
+;(autoload 'w3-batch-fetch "w3" "Batch retrieval of URLs" t)
+;(autoload 'url-get-url-at-point "url" "Find the url under the cursor" nil)
+;(autoload 'url-file-attributes  "url" "File attributes of a URL" nil)
+;(autoload 'url-popup-info "url" "Get info on a URL" t)
+;(autoload 'url-retrieve   "url" "Retrieve a URL" nil)
+;(autoload 'url-buffer-visiting "url" "Find buffer visiting a URL." nil)
+;(autoload 'gopher-dispatch-object "gopher" "Fetch gopher dir" t)
+
+;(setq-default 'url-be-asynchronous t)
+;(setq-default 'w3-default-homepage "http://www.aros.net/")
+
+;; End of Emacs-w3 configuration
+
+;(eval-after-load "cc-mode"
+;   '(c-add-style "dave"
+;		 
+;     '((c-basic-offset . 2)
+;     (c-comment-only-line-offset . (0 . 0))
+;     (c-hanging-braces-alist . ((substatement-open before after)))
+;     (c-offsets-alist . ((statement-block-intro . +)
+;                         (knr-argdecl-intro . 5)
+;                         (substatement-open . 0)
+;                         (label . 0)
+;                         (statement-case-open . +)
+;                         (statement-cont . +)
+;                         (arglist-intro . c-lineup-arglist-intro-after-paren)
+;                         (arglist-close . c-lineup-arglist)
+;                         ))) t))
+
+
+;(eval-after-load "cc-mode"
+;   '(c-add-style "davejava"
+;		 
+;
+;     '((c-basic-offset . 2)
+;     (c-comment-only-line-offset . (0 . 0))
+;     (c-offsets-alist . ((statement-block-intro . +)
+;                         (knr-argdecl-intro     . 5)
+;                         (substatement-open     . +)
+;                         (label                 . 0)
+;                         (statement-case-open   . +)
+;                         (statement-cont        . +)
+;                         (arglist-intro . c-lineup-arglist-intro-after-paren)
+;                         (arglist-close . c-lineup-arglist)
+;                         (access-label  . 0)
+;                         ))) t))
+
+
+;;
+;; mh, mailcrypt stuff
+;;
+
+;(add-hook 'mh-folder-mode-hook 'mc-install-read-mode)
+;(add-hook 'mh-letter-mode-hook 'mc-install-write-mode)
+
+;( setq
+;  mh-yank-from-start-of-msg  'body   ; Just quote bodies when replying.
+;  mh-auto-folder-collect    t   ; automatically find folders at startup
+;  mh-recursive-folders      t   ; use recursive folders
+;  mh-inc-prog      "/home/angio/bin/myinc" ; Use my inc program
+;  mh-summary-height         7           ; show 7 lines of summary
+;  mh-clean-message-header   t           ; Do clean up the headers as below.
+;  mh-invisible-headers      "^Received: \\|^Message-ID: \\|^Remailed-\\|^Via: \\|^Mail-from: \\|^Return-Path: \\|^In-Reply-To: \\|^Resent-\\|^X-Mailer: \\|^X-Loop: \\|^Precedence: \\|Mime-Version: \\|Content-Type: \\|Content-Transfer-Encoding: \\|Content-
+
+
+
+
+
+
+
+
+;MD5: \\|References: \\|Path: "
+;)
+
+;(defun my-mh-inc-folder-hook ()
+;  "Hook to rescan folder after incorporating mail."
+;  (if (buffer-modified-p)               ; if outstanding refiles and deletes,
+;      (mh-execute-commands))            ; flush them
+;  (mh-rescan-folder)                    ; sync. with +inbox
+;  (mh-show))
+
+;(add-hook 'mh-inc-folder-hoook 'my-mh-inc-folder-hook)
+
+;;;; Commented out by <ctc>.
+;; other cool stuff...
+;(autoload 'align-regexp         "align-regexp"          nil t)
+;(autoload 'find-file-at-point   "find-file-at-point"    nil t)
+;(global-set-key "\C-c|"         'align-regexp)
+;(global-set-key "\C-co"         'find-file-at-point)
+;(global-set-key "\C-C;"         'comment-region)
+
+(custom-set-variables
+ '(compile-command "ccgtm -b build -br"))
+(custom-set-faces)
+
+
+
+;;;----------------------------------------------------------------
+;;; addpb
+;;; 
+;;; Little macro to add ui elements more easily.
+;;; 
+(defun addpb (name)
+  (interactive (list (read-string (format "Button name: "))))
+  (c-indent-command)
+  (insert-string
+   name "_ = new ff_pushbtn_obj(this, \"" name "\");\n"))

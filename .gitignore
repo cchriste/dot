@@ -1,0 +1,8 @@
+.emacs*
+TAGS
+build/
+.gitignore*
+*~
+.DS_Store
+*.diff
+.csearchindex
