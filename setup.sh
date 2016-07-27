@@ -5,8 +5,6 @@
 #
 # Replace dotfiles with rcs versions to ease system migration.
 #
-# NOTE: these are very osx centric.
-#
 
 pushd ~
 
@@ -19,6 +17,7 @@ mv .pythonrc .pythonrc.$$.bak
 mv .gitconfig .gitconfig.$$.bak
 mv .gitignore .gitignore.$$.bak
 mv .screenrc .screenrc.$$.bak
+mv .Xresources .Xresources.$$.bak
 
 # symbolic link to new source-controlled dotfiles
 ln -s dot/emacs emacs
@@ -29,5 +28,8 @@ ln -s dot/.pythonrc .pythonrc
 ln -s dot/.gitconfig .gitconfig
 ln -s dot/.gitignore .gitignore
 ln -s dot/.screenrc .screenrc
+ln -s dot/.Xresouces .Xresources
 
 popd
+
+xrdb -merge ~/.Xresources

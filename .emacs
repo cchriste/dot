@@ -372,11 +372,10 @@ prefer for `sh-mode'.  It is automatically added to
 
 
 ;;ctc - get machine name, 11 for desktop, 10 for laptop
-(if (string= (system-name) "jupiter.sci.utah.edu")
+(if (or (string-prefix-p (system-name) "jupiter") (string-prefix-p (system-name) "mercury"))
     (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-11-*-*-*-m-0-iso10646-1")
-  (if (string= (system-name) "atlanta.sci.utah.edu") 
-      (message "can't set system font")
-      ;(set-face-attribute 'default nil :font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-fontset-auto2")
-    (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-10-*-*-*-m-0-iso10646-1")))
+    (set-face-attribute 'default nil :font "DejaVu Sans Mono-12:weight=Regular"))
+    ;(set-face-attribute 'default nil :font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-fontset-auto2")
+    ;(set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-10-*-*-*-m-0-iso10646-1")))
 
 (put 'upcase-region 'disabled nil)

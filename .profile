@@ -113,4 +113,10 @@ if [ `hostname | cut -f1 -d "."` = mercury ]; then
 fi
 
 
+export GOPATH=$HOME/bin/go
+export PATH=$GOPATH/bin:$PATH
+export NCCL_LINK=NVLINK
+export NCCL_TOPOLOGY=CUBEMESH
+export NCCL_DEBUG=INFO
+
 source ~/.openrc
