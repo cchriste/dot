@@ -103,7 +103,7 @@
  ;; If there is more than one, they won't work right.
  '(font-lock-builtin-face ((t (:background "purple" :foreground "white" :weight bold))))
  '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face :weight bold))))
- '(font-lock-comment-face ((t (:foreground "snow"))))
+ '(font-lock-comment-face ((t (:foreground "light cyan"))))
  '(font-lock-constant-face ((t (:foreground "cyan1" :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "green" :weight bold))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "white"))))
