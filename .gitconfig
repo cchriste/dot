@@ -50,3 +50,5 @@
 	insteadof = git://github.com/UV-CDAT/scimake.git
 [url "http://github.com/ajdawson/windspharm.git"]
 	insteadof = git://github.com/ajdawson/windspharm.git
+[push]
+	default = simple

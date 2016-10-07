@@ -122,7 +122,7 @@ if [ ! -f ~/.ssh/id_rsa ]; then
 fi
 
 # Load saved modules
-module load null
+#module load null
 
 # User specific aliases and functions
 
@@ -251,3 +251,5 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+export P4PORT="p4sw:2006"
