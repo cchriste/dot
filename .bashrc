@@ -253,3 +253,8 @@ if ! shopt -oq posix; then
 fi
 
 export P4PORT="p4sw:2006"
+
+# added by Anaconda2 4.3.0 installer
+export PATH="/usr/local/anaconda2/bin:$PATH"
+
+
