@@ -1,5 +1,12 @@
+ServerAliveInterval 100
+
 Host jupiter
     HostName jupiter.sci.utah.edu
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
+Host gunship
+    HostName gunship.sci.utah.edu
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/id_rsa
 
@@ -22,6 +29,12 @@ Host ash2
     ControlMaster auto
     ControlPath /tmp/%r@%h:%p
     ControlPersist 12h
+
+Host magellan
+     HostName 140.221.67.181
+     PreferredAuthentications publickey
+     IdentityFile ~/.ssh/magellan
+     User ubuntu
 
 Host cooley
     HostName cooley.alcf.anl.gov
@@ -64,8 +77,6 @@ Host aurora
 
 Host surface 
     HostName surface.llnl.gov
-#    PreferredAuthentications publickey
-#    IdentityFile ~/.ssh/id_rsa
     User cchriste
     ControlMaster auto
     ControlPath /tmp/%r@%h:%p
@@ -76,11 +87,11 @@ Host github
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/id_rsa
 
-Host pcmdi11
-    HostName pcmdi11.llnl.gov
-    PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_rsa
-    User cam
+# Host pcmdi11
+#     HostName pcmdi11.llnl.gov
+#     PreferredAuthentications publickey
+#     IdentityFile ~/.ssh/id_rsa
+#     User cam
 
 Host shaheen
      HostName shaheen1.hpc.kaust.edu.sa
@@ -101,7 +112,7 @@ Host pascucci
      User christct
 
 Host visusmac
-     HostName mliumacmini.sci.utah.edu
+     HostName visusmac.sci.utah.edu
      PreferredAuthentications publickey
      IdentityFile ~/.ssh/id_rsa
      User visus
@@ -117,6 +128,79 @@ Host uintahwiki
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/uintahwiki_rsa
     Port 910
+
+Host aims2
+    HostName aims2.llnl.gov
+    User christensen41
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host greyworm1
+    HostName greyworm1.llnl.gov
+    User christensen41
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host greyworm2
+    HostName greyworm2.llnl.gov
+    User christensen41
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host greyworm3
+    HostName greyworm3.llnl.gov
+    User christensen41
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host greyworm4
+    HostName greyworm4.llnl.gov
+    User christensen41
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host greyworm5
+    HostName greyworm5.llnl.gov
+    User christensen41
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host greyworm6
+    HostName greyworm6.llnl.gov
+    User christensen41
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host greyworm7
+    HostName greyworm7.llnl.gov
+    User christensen41
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+Host greyworm8
+    HostName greyworm8.llnl.gov
+    User christensen41
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    ControlPersist 12h
+
+#Host corkscrew-atlanta
+#     HostName atlanta.sci.utah.edu
+#     ProxyCommand corkscrew 172.30.28.50 80 %h %p ~/.ssh/id_rsa
+
+Host feedback
+    HostName feedback.llnl.gov
+    User christensen41
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
 
 Host *
 IdentityFile ~/.ssh/id_rsa

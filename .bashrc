@@ -1,4 +1,6 @@
-# .bashrc
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
 # (called by .profile)
 
 # Fink (disabled in favor of homebrew)
@@ -113,7 +115,6 @@ if [ -f ~/.openrc ]; then
         . ~/.openrc
 fi
 
-# User specific aliases and functions
 if [ ! -f ~/.ssh/id_rsa ]; then   
     echo 'No public/private RSA keypair found.'
     ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -N ""    
@@ -121,22 +122,36 @@ if [ ! -f ~/.ssh/id_rsa ]; then
     chmod 644 ~/.ssh/authorized_keys
 fi
 
+export PATH=/usr/local/bin:$PATH  # /usr/local/bin/should be first, but OSX in system default (controlled by /etc/paths) it's last!
+
+#MATLAB
+export MATLAB_JAVA="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
+export PATH="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin":$PATH
+
+# doxygen
+export PATH=/Applications/Doxygen.app/Contents/Resources:$PATH
+
+#ImageMagick
+export PATH=/usr/local/ImageMagick-6.9.3/bin:$PATH
+export DYLD_LIBRARY_PATH=/usr/local/ImageMagick-6.9.3/lib:$DYLD_LIBRARY_PATH
+
+
 # Load saved modules
 #module load null
 
 # User specific aliases and functions
 
-export PS1="\[\e[32;1m\]\h:\W \u\$ \[\e[0m\]"
+source ~/bin/git-completion.bash
+source ~/bin/git-prompt.sh
+export PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
+#export PS1='[\e[32;1m\]\u@\h \W$(__git_ps1 " (%s)")]\$ \[\e[0m\]'
+#export PS1="\[\e[32;1m\]\h:\W \u\$ \[\e[0m\]"
 
-#alias ls='ls -FhG'
+alias ls='ls -FhG'
 alias ll='ls -alFhG'
 alias df='df -H'
 alias du='du -h'
 alias hgstat='hg status | grep -Ev \(\\?\|\\!\)'
-
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
 
 # If not running interactively, don't do anything
 case $- in
@@ -153,7 +168,7 @@ shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
-HISTFILESIZE=2000
+HISTFILESIZE=250000
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.

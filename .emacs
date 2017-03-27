@@ -20,6 +20,9 @@
 (require 'codesearch)
 (setq codesearch-csearchindex (getenv "CSEARCHINDEX"))
 
+;;cmake mode
+(require 'cmake-mode)
+
 ;; don't ignore (ViSUS) .idx files for completion
 (setq completion-ignored-extensions (delete ".idx" completion-ignored-extensions))
 
@@ -52,7 +55,7 @@
 
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
-(setq tab-stop-list (number-sequence 4 200 4))
+(setq tab-stop-list (number-sequence 2 200 2))
 
 (setq default-tab-width 2)
 
@@ -62,7 +65,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(c-offsets-alist (quote ((arglist-intro . +) (arglist-cont c-lineup-gcc-asm-reg 0))))
+ '(cc-search-directories (quote ("." "/usr/include" "/usr/local/include/*" "../../src" "../include/*")))
  '(compilation-skip-threshold 2)
+ '(css-indent-offset 2)
  '(desktop-path (quote ("." "~/.emacs.d/" "~")))
  '(desktop-restore-eager 7)
  '(desktop-save-mode t)
@@ -76,6 +81,7 @@
  '(inhibit-startup-screen t)
  '(initial-buffer-choice t)
  '(initial-scratch-message nil)
+ '(js-indent-level 2)
  '(large-file-warning-threshold nil)
  '(line-move-visual nil)
  '(list-command-history-max nil)
@@ -85,7 +91,7 @@
  '(ns-right-alternate-modifier (quote super))
  '(nxml-sexp-element-flag t)
  '(partial-completion-mode nil)
- '(safe-local-variable-values (quote ((TeX-master . "dynamic_remote_analysis"))))
+ '(safe-local-variable-values (quote ((TeX-master . "proposal") (TeX-master . "paper") (TeX-master . "dynamic_remote_analysis"))))
  '(savehist-mode t nil (savehist))
  '(scroll-down-aggressively 0.1)
  '(scroll-up-aggressively 0.1)
@@ -133,7 +139,15 @@
   (interactive)
   (revert-buffer t t))
 
+;;; increase/decrease text scale in all buffers
+;; (defadvice text-scale-increase (around all-buffers (arg) activate)
+;;     (dolist (buffer (buffer-list))
+;;       (with-current-buffer buffer
+;;         ad-do-it)))
+
 ;;; Assign shortcuts
+(global-set-key (kbd "C-}") '(lambda() (interactive) (text-scale-increase 1)))
+(global-set-key (kbd "C-{") '(lambda() (interactive) (text-scale-increase -1)))
 (global-set-key "\C-ce" 'ediff-buffers)
 (global-set-key (kbd "C-c l") 'insert-date)
 (global-set-key (kbd "C-S-p") '(lambda() (interactive) (scroll-down 1)))
@@ -286,6 +300,14 @@
   (local-unset-key (kbd "C-c C-c"))
   (local-set-key "\C-c\C-c" 'comment-region))
 
+;; Latex Hook
+(add-hook 'latex-mode-hook
+          'my-latex-customizations)
+(defun my-latex-customizations ()
+  "set up my personal customizations for latex mode"
+  (local-unset-key (kbd "C-c C-c"))
+  (local-set-key "\C-c\C-c" 'comment-region))
+
 ;;Shell scripts
 (defun cam-setup-sh-mode ()
   "My own personal preferences for `sh-mode'.
@@ -375,9 +397,12 @@ prefer for `sh-mode'.  It is automatically added to
 ;;ctc - get machine name, 11 for desktop, 10 for laptop
 (when (or (string-prefix-p "jupiter" (system-name)) (string-prefix-p "mercury" (system-name)))
     (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-11-*-*-*-m-0-iso10646-1")
-    (set-face-attribute 'default nil :font "DejaVu Sans Mono-12:weight=Regular"))
-    ;(set-face-attribute 'default nil :font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-fontset-auto2")
-    ;(set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-10-*-*-*-m-0-iso10646-1")))
+  (if (string= (system-name) "mercury.local") 
+    (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-12-*-*-*-m-0-iso10646-1")
+    (if (string= (system-name) "atlanta.sci.utah.edu") 
+        (message "can't set system font")
+                                        ;(set-face-attribute 'default nil :font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-fontset-auto2")
+      (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"))))
 
 (when (string-prefix-p "gunship" (system-name))
     (message "configuring for gunship...")
