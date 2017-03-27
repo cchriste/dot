@@ -7,13 +7,19 @@
 # .profile for terminal OSX sessions.
 #
 
-export PS1="\[\e[32;1m\]\h:\W \u\$ \[\e[0m\]"
+source ~/bin/git-completion.bash
+source ~/bin/git-prompt.sh
+export PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
+#export PS1='[\e[32;1m\]\u@\h \W$(__git_ps1 " (%s)")]\$ \[\e[0m\]'
+#export PS1="\[\e[32;1m\]\h:\W \u\$ \[\e[0m\]"
 
 alias ls='ls -FhG'
 alias ll='ls -alFhG'
 alias df='df -H'
 alias du='du -h'
 alias hgstat='hg status | grep -Ev \(\\?\|\\!\)'
+
+export PATH=/usr/local/bin:$PATH  # /usr/local/bin/should be first, but OSX in system default (controlled by /etc/paths) it's last!
 
 # Fink (disabled in favor of homebrew)
 # test -r /sw/bin/init.sh && . /sw/bin/init.sh
@@ -23,7 +29,7 @@ alias hgstat='hg status | grep -Ev \(\\?\|\\!\)'
 #       directory above the bin directory.  The first path finds the
 #       Emacs/emacs symbolic link, while the second makes available
 #       the correct versions of etags, etc.
-export PATH=$HOME/bin:/Applications/Emacs.app/Contents/MacOS:/Applications/Emacs.app/Contents/MacOS/bin:$PATH
+export PATH=$PATH:$HOME/bin:/Applications/Emacs.app/Contents/MacOS:/Applications/Emacs.app/Contents/MacOS/bin
 
 # EDITOR (Emacs takes too long to startup to be used as EDITOR)
 export EDITOR=vim
@@ -59,11 +65,12 @@ export PYTHONSTARTUP=$HOME/.pythonrc
 #export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$BOOST_LIBRARYDIR
 
 # ViSUS
-export VISUS_BIN=$HOME/tools/nvisus/bin
+export VISUS_BIN=/usr/local/nvisusio/bin
+export VISUS_ALT_BIN=/usr/local/visus/bin
 #export VISUSCONVERT=$VISUS/visusconvert.app/Contents/MacOS/visusconvert
 #export TRUNK=https://gforge.sci.utah.edu/svn/dar/ViSUS/src/nvisusio/trunk
 #export BRANCH=https://gforge.sci.utah.edu/svn/dar/ViSUS/src/nvisusio/branches/cam
-export PATH=$VISUS_BIN:$VISUS_BIN/visusconvert.app/Contents/MacOS:$VISUS_BIN/visusselftest.app/Contents/MacOS:$VISUS_BIN/visusviewer.app/Contents/MacOS:$VISUS_BIN/visuswavelet.app/Contents/MacOS:$VISUS_BIN/visusguitest.app/Contents/MacOS:$PATH
+export PATH=$VISUS_BIN:$VISUS_ALT_BIN:$PATH
 
 #swarp (SDSS)
 #export PATH=$PATH:$HOME/tools/swarp/bin
@@ -77,7 +84,7 @@ export PATH=$VISUS_BIN:$VISUS_BIN/visusconvert.app/Contents/MacOS:$VISUS_BIN/vis
 ##
 echo $PATH | grep -q -s "/usr/local/bin"
 if [ $? -eq 1 ] ; then
-    PATH=$PATH:/usr/local/bin
+    PATH=/usr/local/bin:$PATH
     export PATH
 fi
 
@@ -88,10 +95,6 @@ export PATH=$HOME/Dropbox/Applications/MATLAB_R2014a.app/bin:$PATH
 export MATLAB_JAVA="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
 export PATH="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin":$PATH
 
-#macports (disabled to compiled Uintah)
-#export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-#export PATH=/usr/local/opt/gnu-sed/bin:$PATH
-
 # doxygen
 export PATH=/Applications/Doxygen.app/Contents/Resources:$PATH
 
@@ -100,17 +103,41 @@ export PATH=/Applications/Doxygen.app/Contents/Resources:$PATH
 PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
 export PATH
 
+#ImageMagick
+export PATH=/usr/local/ImageMagick-6.9.3/bin:$PATH
+export DYLD_LIBRARY_PATH=/usr/local/ImageMagick-6.9.3/lib:$DYLD_LIBRARY_PATH
 
 #
 # mercury-specific additions
 #
 if [ `hostname | cut -f1 -d "."` = mercury ]; then
     #CMAKE
-    export PATH=/Applications/CMake_2.8-12.app/Contents/bin:$PATH
+    export PATH=/Applications/CMake.app/Contents/bin:$PATH
 
     #LATEX
     export PATH=/usr/local/texlive/2013/bin/x86_64-darwin:$PATH
 fi
 
+#VirtualGL
+export PATH=/opt/VirtualGL/bin:$PATH
 
-source ~/.openrc
+#GO
+export GOPATH=$HOME/GO
+export PATH=$GOPATH/bin:$PATH
+
+##
+# Your previous /Users/cam/.profile file was backed up as /Users/cam/.profile.macports-saved_2016-08-27_at_20:50:53
+##
+
+# MacPorts Installer addition on 2016-08-27_at_20:50:53: adding an appropriate PATH variable for use with MacPorts.
+# export PATH="/opt/local/bin:/opt/local/sbin:$PATH"  # removed macports in Mar 2017 (trying to avoid macports as well as homebrew for now)
+
+# added by Miniconda2 4.2.12 installer
+#export PATH="/Users/cam/tools/miniconda2/bin:$PATH"
+
+# added by Anaconda2 4.3.0 installer
+export PATH="/Users/cam/tools/anaconda2/bin:$PATH"
+
+source ~/.bashrc
+#source ~/.openrc
+

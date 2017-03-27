@@ -7,3 +7,4 @@ if [ -f /etc/bashrc ]; then
 fi
 
 # what needs to go here?
+HISTFILESIZE=250000
