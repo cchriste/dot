@@ -109,7 +109,7 @@
  ;; If there is more than one, they won't work right.
  '(font-lock-builtin-face ((t (:background "purple" :foreground "white" :weight bold))))
  '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face :weight bold))))
- '(font-lock-comment-face ((t (:foreground "snow"))))
+ '(font-lock-comment-face ((t (:foreground "light cyan"))))
  '(font-lock-constant-face ((t (:foreground "cyan1" :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "green" :weight bold))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "white"))))
@@ -394,7 +394,7 @@ prefer for `sh-mode'.  It is automatically added to
 
 
 ;;ctc - get machine name, 11 for desktop, 10 for laptop
-(if (string= (system-name) "jupiter.sci.utah.edu")
+(if (or (string-prefix-p "jupiter" (system-name)) (string-prefix-p "mercury" (system-name)))
     (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-11-*-*-*-m-0-iso10646-1")
   (if (string= (system-name) "mercury.local") 
     (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-12-*-*-*-m-0-iso10646-1")
@@ -402,5 +402,12 @@ prefer for `sh-mode'.  It is automatically added to
         (message "can't set system font")
                                         ;(set-face-attribute 'default nil :font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-fontset-auto2")
       (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"))))
+
+(if (string-prefix-p "gunship" (system-name))
+    (message "configuring for gunship...")
+    (custom-set-variables
+     '(x-meta-keysym (quote alt))
+     '(x-super-keysym (quote meta))
+     ))
 
 (put 'upcase-region 'disabled nil)
