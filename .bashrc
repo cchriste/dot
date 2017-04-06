@@ -3,9 +3,6 @@
 # for examples
 # (called by .profile)
 
-# Fink (disabled in favor of homebrew)
-# test -r /sw/bin/init.sh && . /sw/bin/init.sh
-
 # NOTE: Emacs paths seem duplicated because for some reason this build
 #       of Emacs requires that it be executed from a symbolic link one
 #       directory above the bin directory.  The first path finds the
@@ -21,6 +18,7 @@ export PYTHONSTARTUP=$HOME/.pythonrc
 #export QTDIR=$HOME/build/qt  #jupiter
 #export PATH=$QTDIR/bin:$PATH
 #export DYLD_LIBRARY_PATH=$QTDIR/lib:$DYLD_LIBRARY_PATH
+export PATH=/Developer/qt5/5.7/clang_64/bin:$PATH
 
 # VTK
 #export VTK_DIR=$HOME/code/VTK/build
@@ -32,6 +30,8 @@ export PYTHONSTARTUP=$HOME/.pythonrc
 #export ITK_SOURCE_DIR=$HOME/code/InsightToolkit-3.16.0/
 #export ITK_DIR=$HOME/code/InsightToolkit-3.16.0/build
 #export ITK_BINARY_DIR=$ITK_DIR/bin
+
+# TODO: can add topology toolkit to this next!
 
 # CRCNS (ImageReconstruction project, path to ir-tools and Iris/Scripts)
 #export CRCNS=$HOME/code/ir/trunk
@@ -45,11 +45,11 @@ export PYTHONSTARTUP=$HOME/.pythonrc
 #export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$BOOST_LIBRARYDIR
 
 # ViSUS
-export VISUS_BIN=$HOME/tools/nvisus/bin
+#export VISUS_BIN=$HOME/tools/nvisus/bin
 #export VISUSCONVERT=$VISUS/visusconvert.app/Contents/MacOS/visusconvert
 #export TRUNK=https://gforge.sci.utah.edu/svn/dar/ViSUS/src/nvisusio/trunk
 #export BRANCH=https://gforge.sci.utah.edu/svn/dar/ViSUS/src/nvisusio/branches/cam
-export PATH=$VISUS_BIN:$VISUS_BIN/visusconvert.app/Contents/MacOS:$VISUS_BIN/visusselftest.app/Contents/MacOS:$VISUS_BIN/visusviewer.app/Contents/MacOS:$VISUS_BIN/visuswavelet.app/Contents/MacOS:$VISUS_BIN/visusguitest.app/Contents/MacOS:$PATH
+#export PATH=$VISUS_BIN:$VISUS_BIN/visusconvert.app/Contents/MacOS:$VISUS_BIN/visusselftest.app/Contents/MacOS:$VISUS_BIN/visusviewer.app/Contents/MacOS:$VISUS_BIN/visuswavelet.app/Contents/MacOS:$VISUS_BIN/visusguitest.app/Contents/MacOS:$PATH
 
 #swarp (SDSS)
 #export PATH=$PATH:$HOME/tools/swarp/bin
@@ -57,50 +57,42 @@ export PATH=$VISUS_BIN:$VISUS_BIN/visusconvert.app/Contents/MacOS:$VISUS_BIN/vis
 #hdf utils
 #export PATH=$HOME/tools/h5utils/bin:$HOME/tools/hdf5/bin:$HOME/tools/hdf4/bin:$PATH
 
-##
-# DELUXE-USR-LOCAL-BIN-INSERT
-# (do not remove this comment)
-##
-echo $PATH | grep -q -s "/usr/local/bin"
-if [ $? -eq 1 ] ; then
-    PATH=$PATH:/usr/local/bin
-    export PATH
-fi
-
+#MPI
 export PATH=/usr/local/mpi/bin:$PATH
-export PATH=$HOME/Dropbox/Applications/MATLAB_R2014a.app/bin:$PATH
 
 #MATLAB
+export PATH=/Applications/MATLAB_R2015a.app/bin:$PATH
 export MATLAB_JAVA="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
-export PATH="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin":$PATH
 
-#macports (disabled to compiled Uintah)
-#export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-#export PATH=/usr/local/opt/gnu-sed/bin:$PATH
+#JAVA
+export PATH="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin":$PATH
 
 # doxygen
 export PATH=/Applications/Doxygen.app/Contents/Resources:$PATH
 
-# Setting PATH for Python 2.7
-# The orginal version is saved in .profile.pysave
-PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
-export PATH
+#Python
+export PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
 
+#VirtualGL
+export PATH=/opt/VirtualGL/bin:$PATH
 
-#
-# mercury-specific additions
-#
-if [ `hostname | cut -f1 -d "."` = mercury ]; then
-    #CMAKE
-    export PATH=/Applications/CMake_2.8-12.app/Contents/bin:$PATH
+# OSX-specific additions
+#if [ `hostname | cut -f1 -d "."` = mercury ]; then
+if [ `uname` = Darwin ]; then
+  echo "Including OSX-specific configuration..."
 
-    #LATEX
-    export PATH=/usr/local/texlive/2013/bin/x86_64-darwin:$PATH
+  #LATEX
+  export PATH=/usr/local/texlive/2013/bin/x86_64-darwin:$PATH
 fi
 
-#Google CodeSearch (on Ubuntu installed with Go, see csearch github page) 
-export GOPATH=$HOME/go
-export PATH=$GOPATH/bin:$PATH
+# gunship-specific additions (really, linux in general)
+#if [ `hostname | cut -f1 -d "."` = gunship ]; then
+if [ `uname` = Linux ]; then
+  echo "Including Linux-specific configuration..."
+fi
+
+#GO (for google codesearch)
+export GOPATH=$HOME/GO
 
 #nvidia nccl compositing
 export LD_LIBRARY_PATH=$HOME/code/nccl/build/lib:$LD_LIBRARY_PATH
@@ -122,8 +114,6 @@ if [ ! -f ~/.ssh/id_rsa ]; then
     chmod 644 ~/.ssh/authorized_keys
 fi
 
-export PATH=/usr/local/bin:$PATH  # /usr/local/bin/should be first, but OSX in system default (controlled by /etc/paths) it's last!
-
 #MATLAB
 export MATLAB_JAVA="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
 export PATH="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin":$PATH
@@ -135,37 +125,28 @@ export PATH=/Applications/Doxygen.app/Contents/Resources:$PATH
 export PATH=/usr/local/ImageMagick-6.9.3/bin:$PATH
 export DYLD_LIBRARY_PATH=/usr/local/ImageMagick-6.9.3/lib:$DYLD_LIBRARY_PATH
 
-
-# Load saved modules
-#module load null
-
-# User specific aliases and functions
-
+#GIT
 source ~/bin/git-completion.bash
 source ~/bin/git-prompt.sh
 export PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
-#export PS1='[\e[32;1m\]\u@\h \W$(__git_ps1 " (%s)")]\$ \[\e[0m\]'
-#export PS1="\[\e[32;1m\]\h:\W \u\$ \[\e[0m\]"
 
+#Custom aliases and functions
 alias ls='ls -FhG'
 alias ll='ls -alFhG'
 alias df='df -H'
 alias du='du -h'
 alias hgstat='hg status | grep -Ev \(\\?\|\\!\)'
 
-# If not running interactively, don't do anything
+# If not running interactively, don't do anything <ctc> no idea...
 case $- in
     *i*) ;;
       *) return;;
 esac
 
 # don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
 HISTCONTROL=ignoreboth
-
 # append to the history file, don't overwrite it
 shopt -s histappend
-
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=250000
@@ -236,7 +217,7 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # some more ls aliases
 #alias ll='ls -alF'
@@ -267,9 +248,23 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export P4PORT="p4sw:2006"
 
-# added by Anaconda2 4.3.0 installer
-export PATH="/usr/local/anaconda2/bin:$PATH"
+#3/2017: FINK, HOMEBREW, MACPORTS, ANACONDA removed to avoid all non-standard package mgrs
+#FINK
+#test -r /sw/bin/init.sh && . /sw/bin/init.sh # (disabled in favor of homebrew)
+#MACPORTS
+# export PATH="/opt/local/bin:/opt/local/sbin:$PATH"  
+#HOMEBREW
+#...
+#ANACONDA (we like Anaconda, but it interferes at times with building, e.g., Qt apps)
+#export PATH="/usr/local/anaconda2/bin:$PATH"
 
+##
+# DELUXE-USR-LOCAL-BIN-INSERT
+# (do not remove this comment)
+##
+echo $PATH | grep -q -s "/usr/local/bin"
+if [ $? -eq 1 ] ; then
+    export PATH=/usr/local/bin:$PATH
+fi
 
