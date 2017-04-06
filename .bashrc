@@ -103,10 +103,10 @@ export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$PATH
 
 #nvidia nccl compositing
-export LD_LIBRARY_PATH=$HOME/code/nccl/build/lib:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=$HOME/code/nccl/build/lib:$LD_LIBRARY_PATH
 #export NCCL_LINK=NVLINK
 #export NCCL_TOPOLOGY=CUBEMESH
-export NCCL_DEBUG=INFO
+#export NCCL_DEBUG=INFO
 
 export PATH=/usr/local/cuda/bin:$PATH
 
@@ -269,7 +269,9 @@ fi
 
 export P4PORT="p4sw:2006"
 
-# added by Anaconda2 4.3.0 installer
-export PATH="/usr/local/anaconda2/bin:$PATH"
+# added by Anaconda2 4.3.0 installer (only use it when needed. Qt doesn't work)
+#export PATH="/usr/local/anaconda2/bin:$PATH"
 
 
+#opencv (on gunship)
+export PATH="/usr/local/opencv-3.2/bin:$PATH"
