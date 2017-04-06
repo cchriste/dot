@@ -215,6 +215,7 @@
 ;; pick default style based on environment var 'MYPROJECT'
 (setq CurrentProject (getenv "MYPROJECT"))
 (setq my-c-style "ViSUS")
+;;TODO: use (cond instead
 (if (equal CurrentProject "VISUS")
     (setq my-c-style "ViSUS")
   (if (equal CurrentProject "VISIT")
@@ -394,7 +395,7 @@ prefer for `sh-mode'.  It is automatically added to
 
 
 ;;ctc - get machine name, 11 for desktop, 10 for laptop
-(if (or (string-prefix-p "jupiter" (system-name)) (string-prefix-p "mercury" (system-name)))
+(when (or (string-prefix-p "jupiter" (system-name)) (string-prefix-p "mercury" (system-name)))
     (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-11-*-*-*-m-0-iso10646-1")
   (if (string= (system-name) "mercury.local") 
     (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-12-*-*-*-m-0-iso10646-1")
@@ -403,7 +404,7 @@ prefer for `sh-mode'.  It is automatically added to
                                         ;(set-face-attribute 'default nil :font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-fontset-auto2")
       (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"))))
 
-(if (string-prefix-p "gunship" (system-name))
+(when (string-prefix-p "gunship" (system-name))
     (message "configuring for gunship...")
     (custom-set-variables
      '(x-meta-keysym (quote alt))
