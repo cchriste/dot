@@ -158,6 +158,7 @@
 (global-set-key "\C-cd" 'hide-subtree)
 (global-set-key "\C-cs" 'show-subtree)
 (global-set-key "\C-x\M-\." 'tags-search)
+(global-set-key "\C-x\M-\," 'tags-loop-continue)
 (global-set-key "\C-x\M->" 'tags-query-replace)
 (global-set-key "\C-c\M-q" 'align-regexp)
 (global-set-key "\C-c\C-v" 'codesearch-search-at-point)
@@ -308,6 +309,14 @@
   (local-unset-key (kbd "C-c C-c"))
   (local-set-key "\C-c\C-c" 'comment-region))
 
+;; Xml Hook
+;; ...
+;; xml mode sucks, nxml mode is much better
+(add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.svgz?\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.config" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.[mg]idx\\'" . nxml-mode))
+
 ;;Shell scripts
 (defun cam-setup-sh-mode ()
   "My own personal preferences for `sh-mode'.
@@ -412,3 +421,31 @@ prefer for `sh-mode'.  It is automatically added to
      ))
 
 (put 'upcase-region 'disabled nil)
+
+(defun find-duplicate-lines (&optional insertp interp)
+  (interactive "i\np")
+  (let ((max-pon (line-number-at-pos (point-max)))
+        (gather-dups))
+    (while (< (line-number-at-pos) max-pon) (= (forward-line) 0)
+           (let ((this-line (buffer-substring-no-properties (line-beginning-position 1) (line-end-position 1)))
+                 (next-line (buffer-substring-no-properties (line-beginning-position 2) (line-end-position 2))))
+             (when  (equal this-line next-line)  (setq gather-dups (cons this-line gather-dups)))))
+    (if (or insertp interp)
+        (save-excursion (newline) (princ gather-dups (current-buffer)))
+      gather-dups)))
+
+(defun file-info ()
+  (interactive)
+  (let ((dired-listing-switches "-alh"))
+    (dired-other-window buffer-file-name)))
+(global-set-key (kbd "C-c i") 'file-info)
+
+(require 'package)
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+                    (not (gnutls-available-p))))
+       (url (concat (if no-ssl "http" "https") "://melpa.org/packages/")))
+  (add-to-list 'package-archives (cons "melpa" url) t))
+(when (< emacs-major-version 24)
+  ;; For important compatibility libraries like cl-lib
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+(package-initialize)

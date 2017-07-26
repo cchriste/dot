@@ -2,23 +2,23 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 # (called by .profile)
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) echo "non-interactive: aborting"; return;;
+esac
 
-# NOTE: Emacs paths seem duplicated because for some reason this build
-#       of Emacs requires that it be executed from a symbolic link one
-#       directory above the bin directory.  The first path finds the
-#       Emacs/emacs symbolic link, while the second makes available
-#       the correct versions of etags, etc.
-export PATH=$HOME/bin:/Applications/Emacs.app/Contents/MacOS:/Applications/Emacs.app/Contents/MacOS/bin:$PATH
+add_to_path()
+{
+  case ":$PATH:" in
+    *":$1:"*) :;;         # already there: ignore
+    *) PATH="$1:$PATH";;  # add to PATH
+  esac
+}
 
 # Tab completion in python interpreter
 export PYTHONSTARTUP=$HOME/.pythonrc
 
-
-# Qt
-#export QTDIR=$HOME/build/qt  #jupiter
-#export PATH=$QTDIR/bin:$PATH
-#export DYLD_LIBRARY_PATH=$QTDIR/lib:$DYLD_LIBRARY_PATH
-export PATH=/Developer/qt5/5.7/clang_64/bin:$PATH
 
 # VTK
 #export VTK_DIR=$HOME/code/VTK/build
@@ -57,50 +57,82 @@ export PATH=/Developer/qt5/5.7/clang_64/bin:$PATH
 #hdf utils
 #export PATH=$HOME/tools/h5utils/bin:$HOME/tools/hdf5/bin:$HOME/tools/hdf4/bin:$PATH
 
-#MPI
-export PATH=/usr/local/mpi/bin:$PATH
-
-#MATLAB
-export PATH=/Applications/MATLAB_R2015a.app/bin:$PATH
-export MATLAB_JAVA="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
-
-#JAVA
-export PATH="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin":$PATH
-
-# doxygen
-export PATH=/Applications/Doxygen.app/Contents/Resources:$PATH
-
-#Python
-export PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
-
 #VirtualGL
-export PATH=/opt/VirtualGL/bin:$PATH
+add_to_path /opt/VirtualGL/bin
+
+#CUDA
+add_to_path /usr/local/cuda/bin
 
 # OSX-specific additions
 #if [ `hostname | cut -f1 -d "."` = mercury ]; then
 if [ `uname` = Darwin ]; then
   echo "Including OSX-specific configuration..."
 
+  # NOTE: Emacs paths seem duplicated because for some reason this build
+  #       of Emacs requires that it be executed from a symbolic link one
+  #       directory above the bin directory.  The first path finds the
+  #       Emacs/emacs symbolic link, while the second makes available
+  #       the correct versions of etags, etc.
+  add_to_path /Applications/Emacs.app/Contents/MacOS:/Applications/Emacs.app/Contents/MacOS/bin
+
+  #MPI
+  add_to_path /usr/local/mpi/bin
+
+  #ImageMagick
+  add_to_path /usr/local/ImageMagick-6.9.3/bin
+  export DYLD_LIBRARY_PATH=/usr/local/ImageMagick-6.9.3/lib:$DYLD_LIBRARY_PATH
+
+  #doxygen
+  add_to_path /Applications/Doxygen.app/Contents/Resources
+
+  #MATLAB
+  export MATLAB_JAVA="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
+  add_to_path "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin"
+
+  #QT
+  add_to_path /Developer/qt5/5.7/clang_64/bin
+
   #LATEX
-  export PATH=/usr/local/texlive/2013/bin/x86_64-darwin:$PATH
+  add_to_path /usr/local/texlive/2013/bin/x86_64-darwin
+
+  #MATLAB
+  add_to_path /Applications/MATLAB_R2015a.app/bin
+  export MATLAB_JAVA="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
+
+  #JAVA
+  add_to_path "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin"
+
+  # doxygen
+  add_to_path /Applications/Doxygen.app/Contents/Resources
+
+  #Python
+  add_to_path "/Library/Frameworks/Python.framework/Versions/2.7/bin"
+
+  #implicit on suse linux, but maybe needed on osx (todo: verify)
+  echo $PATH | grep -q -s "/usr/local/bin"
+  if [ $? -eq 1 ] ; then
+    add_to_path /usr/local/bin
+  fi
 fi
 
 # gunship-specific additions (really, linux in general)
 #if [ `hostname | cut -f1 -d "."` = gunship ]; then
 if [ `uname` = Linux ]; then
   echo "Including Linux-specific configuration..."
+
+  #opencv (on gunship)
+  add_to_path "/usr/local/opencv-3.2/bin"
+
+  #openmpi (should be handled by mpi-selector, but isn't working; also note mvapich2 install in gcc/mvapich2)
+  add_to_path "/usr/lib64/mpi/gcc/openmpi/bin"
+
+  #QT
+  #should already be in /usr/bin
 fi
 
 #GO (for google codesearch)
-export GOPATH=$HOME/GO
-
-#nvidia nccl compositing
-#export LD_LIBRARY_PATH=$HOME/code/nccl/build/lib:$LD_LIBRARY_PATH
-#export NCCL_LINK=NVLINK
-#export NCCL_TOPOLOGY=CUBEMESH
-#export NCCL_DEBUG=INFO
-
-export PATH=/usr/local/cuda/bin:$PATH
+export GOPATH=$HOME/go
+add_to_path $GOPATH/bin
 
 # Source global definitions
 if [ -f ~/.openrc ]; then
@@ -114,17 +146,6 @@ if [ ! -f ~/.ssh/id_rsa ]; then
     chmod 644 ~/.ssh/authorized_keys
 fi
 
-#MATLAB
-export MATLAB_JAVA="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
-export PATH="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin":$PATH
-
-# doxygen
-export PATH=/Applications/Doxygen.app/Contents/Resources:$PATH
-
-#ImageMagick
-export PATH=/usr/local/ImageMagick-6.9.3/bin:$PATH
-export DYLD_LIBRARY_PATH=/usr/local/ImageMagick-6.9.3/lib:$DYLD_LIBRARY_PATH
-
 #GIT
 source ~/bin/git-completion.bash
 source ~/bin/git-prompt.sh
@@ -136,12 +157,6 @@ alias ll='ls -alFhG'
 alias df='df -H'
 alias du='du -h'
 alias hgstat='hg status | grep -Ev \(\\?\|\\!\)'
-
-# If not running interactively, don't do anything <ctc> no idea...
-case $- in
-    *i*) ;;
-      *) return;;
-esac
 
 # don't put duplicate lines or lines starting with space in the history.
 HISTCONTROL=ignoreboth
@@ -253,20 +268,22 @@ fi
 #FINK
 #test -r /sw/bin/init.sh && . /sw/bin/init.sh # (disabled in favor of homebrew)
 #MACPORTS
-# export PATH="/opt/local/bin:/opt/local/sbin:$PATH"  
+# add_to_path "/opt/local/bin:/opt/local/sbin"  
 #HOMEBREW
 #...
-#ANACONDA (we like Anaconda, but it interferes at times with building, e.g., Qt apps)
-#export PATH="/usr/local/anaconda2/bin:$PATH"
 
-##
-# DELUXE-USR-LOCAL-BIN-INSERT
-# (do not remove this comment)
-##
-echo $PATH | grep -q -s "/usr/local/bin"
-if [ $? -eq 1 ] ; then
-    export PATH=/usr/local/bin:$PATH
+#ANACONDA (we like Anaconda, but it interferes at times with building, e.g., Qt apps)
+ENABLE_ANACONDA=1
+if [ "$ENABLE_ANACONDA" -eq 1 ]; then
+  if [ `hostname | cut -f1 -d "."` = mercury ]; then
+    add_to_path "$HOME/tools/anaconda2/bin"
+  else
+    add_to_path "/home/cam/anaconda2/bin"
+  fi
 fi
 
-#opencv (on gunship)
-export PATH="/usr/local/opencv-3.2/bin:$PATH"
+echo $PATH | grep -q -s "$HOME/bin"
+if [ $? -eq 1 ] ; then
+    add_to_path $HOME/bin
+fi
+

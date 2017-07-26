@@ -202,5 +202,11 @@ Host feedback
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/id_rsa
 
+Host cedmav7
+    HostName cedmav7.sci.utah.edu
+    User visus
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
 Host *
 IdentityFile ~/.ssh/id_rsa
