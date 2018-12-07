@@ -10,6 +10,11 @@ Host gunship
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/id_rsa
 
+Host mercury
+    HostName mercury.sci.utah.edu
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
 Host remus
     HostName remus.chpc.utah.edu
     PreferredAuthentications publickey
@@ -87,6 +92,22 @@ Host github
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/id_rsa
 
+#from gunship
+Host github-taranaki
+    HostName github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/gunship
+    IdentitiesOnly yes
+    # IdentitiesOnly needed to prevent id_rsa from being tried first, see https://stackoverflow.com/questions/4565700/specify-private-ssh-key-to-use-when-executing-shell-command-with-or-without-ruby
+
+#from mercury
+Host githubtaranaki
+    HostName github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/truecam
+    IdentitiesOnly yes
+    # IdentitiesOnly needed to prevent id_rsa from being tried first, see https://stackoverflow.com/questions/4565700/specify-private-ssh-key-to-use-when-executing-shell-command-with-or-without-ruby
+
 # Host pcmdi11
 #     HostName pcmdi11.llnl.gov
 #     PreferredAuthentications publickey
@@ -129,12 +150,12 @@ Host uintahwiki
     IdentityFile ~/.ssh/uintahwiki_rsa
     Port 910
 
-Host aims2
-    HostName aims2.llnl.gov
-    User christensen41
-    ControlMaster auto
-    ControlPath /tmp/%r@%h:%p
-    ControlPersist 12h
+# Host aims2
+#     HostName aims2.llnl.gov
+#     User christensen41
+#     ControlMaster auto
+#     ControlPath /tmp/%r@%h:%p
+#     ControlPersist 12h
 
 Host greyworm1
     HostName greyworm1.llnl.gov

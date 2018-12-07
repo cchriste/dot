@@ -27,6 +27,12 @@ Sharing::
 Cluster::
 - qsub -l nodes=<nodename> -I  // to submit job for a particular node
 
+Network::
+- lsof -i TCP // identify apps currently listening on any TCP port
+
+Processes::
+- ps -A u // list all processes by user
+
 
 Working at Nvidia
 =============================

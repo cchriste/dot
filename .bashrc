@@ -5,16 +5,10 @@
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
-      *) echo "non-interactive: aborting"; return;;
+      *) return;; #echo "non-interactive: aborting"; return;;    don't echo from .bashrc, breaks scp!!!
 esac
 
-add_to_path()
-{
-  case ":$PATH:" in
-    *":$1:"*) :;;         # already there: ignore
-    *) PATH="$1:$PATH";;  # add to PATH
-  esac
-}
+. ~/dot/utils.sh
 
 # Tab completion in python interpreter
 export PYTHONSTARTUP=$HOME/.pythonrc
@@ -31,7 +25,7 @@ export PYTHONSTARTUP=$HOME/.pythonrc
 #export ITK_DIR=$HOME/code/InsightToolkit-3.16.0/build
 #export ITK_BINARY_DIR=$ITK_DIR/bin
 
-# TODO: can add topology toolkit to this next!
+# could add topology toolkit, ML, Jupyter, and more to this next!
 
 # CRCNS (ImageReconstruction project, path to ir-tools and Iris/Scripts)
 #export CRCNS=$HOME/code/ir/trunk
@@ -66,7 +60,7 @@ add_to_path /usr/local/cuda/bin
 # OSX-specific additions
 #if [ `hostname | cut -f1 -d "."` = mercury ]; then
 if [ `uname` = Darwin ]; then
-  echo "Including OSX-specific configuration..."
+  #echo "Including OSX-specific configuration..."
 
   # NOTE: Emacs paths seem duplicated because for some reason this build
   #       of Emacs requires that it be executed from a symbolic link one
@@ -102,23 +96,17 @@ if [ `uname` = Darwin ]; then
   #JAVA
   add_to_path "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin"
 
-  # doxygen
-  add_to_path /Applications/Doxygen.app/Contents/Resources
-
-  #Python
-  add_to_path "/Library/Frameworks/Python.framework/Versions/2.7/bin"
+  #Python (use conda instead)
+  #add_to_path "/Library/Frameworks/Python.framework/Versions/2.7/bin"
 
   #implicit on suse linux, but maybe needed on osx (todo: verify)
-  echo $PATH | grep -q -s "/usr/local/bin"
-  if [ $? -eq 1 ] ; then
-    add_to_path /usr/local/bin
-  fi
+  #TODO: test this
+  add_to_path /usr/local/bin
 fi
 
-# gunship-specific additions (really, linux in general)
-#if [ `hostname | cut -f1 -d "."` = gunship ]; then
+#linux-specific additions
 if [ `uname` = Linux ]; then
-  echo "Including Linux-specific configuration..."
+  #echo "Including Linux-specific configuration..."
 
   #opencv (on gunship)
   add_to_path "/usr/local/opencv-3.2/bin"
@@ -131,8 +119,23 @@ if [ `uname` = Linux ]; then
 fi
 
 #GO (for google codesearch)
+export GOOS=linux
+export GOROOT=/usr/lib64/go/1.9
 export GOPATH=$HOME/go
-add_to_path $GOPATH/bin
+export GOBIN=$GOPATH/bin
+add_to_path $GOBIN
+
+#paraview and visit
+add_to_path "/usr/local/paraview/bin"
+add_to_path "/usr/local/visit/bin"
+
+#swig
+add_to_path "/Users/cam/tools/swig-3.0.12"
+
+# see https://github.com/bgr/omdb-cli for more details
+# note to get just rating: omdbtool -t Cars | sed -n '/^imdbrating/{n;p;}'
+export OMDB_API_KEY=12dc5051
+alias omdbtool="python $HOME/tools/omdb-cli/omdbtool.py"
 
 # Source global definitions
 if [ -f ~/.openrc ]; then
@@ -145,18 +148,6 @@ if [ ! -f ~/.ssh/id_rsa ]; then
     cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys
     chmod 644 ~/.ssh/authorized_keys
 fi
-
-#GIT
-source ~/bin/git-completion.bash
-source ~/bin/git-prompt.sh
-export PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
-
-#Custom aliases and functions
-alias ls='ls -FhG'
-alias ll='ls -alFhG'
-alias df='df -H'
-alias du='du -h'
-alias hgstat='hg status | grep -Ev \(\\?\|\\!\)'
 
 # don't put duplicate lines or lines starting with space in the history.
 HISTCONTROL=ignoreboth
@@ -182,62 +173,18 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
-esac
-
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-#force_color_prompt=yes
-
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
-    else
-	color_prompt=
-    fi
+#.bash_prompt
+if [ -f ~/dot/.bash_prompt ]; then
+    . ~/dot/.bash_prompt
 fi
 
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
-unset color_prompt force_color_prompt
-
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
-
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
+#GIT
+source ~/bin/git-completion.bash
+source ~/bin/git-prompt.sh
+#export PS1='[\u@\h \W$(__git_ps1 " (%s)")] '$PS1
 
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-# some more ls aliases
-#alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -247,9 +194,8 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+if [ -f ~/dot/.bash_aliases ]; then
+    . ~/dot/.bash_aliases
 fi
 
 # enable programmable completion features (you don't need to enable
@@ -263,7 +209,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-
 #3/2017: FINK, HOMEBREW, MACPORTS, ANACONDA removed to avoid all non-standard package mgrs
 #FINK
 #test -r /sw/bin/init.sh && . /sw/bin/init.sh # (disabled in favor of homebrew)
@@ -272,18 +217,15 @@ fi
 #HOMEBREW
 #...
 
-#ANACONDA (we like Anaconda, but it interferes at times with building, e.g., Qt apps)
+#ANACONDA (we like Anaconda, but it can sometimes interfere)
 ENABLE_ANACONDA=1
-if [ "$ENABLE_ANACONDA" -eq 1 ]; then
-  if [ `hostname | cut -f1 -d "."` = mercury ]; then
-    add_to_path "$HOME/tools/anaconda2/bin"
-  else
-    add_to_path "/home/cam/anaconda2/bin"
-  fi
+if [ -f ~/bin/start_anaconda.sh ]; then
+    . ~/bin/start_anaconda.sh
 fi
 
-echo $PATH | grep -q -s "$HOME/bin"
-if [ $? -eq 1 ] ; then
-    add_to_path $HOME/bin
-fi
+
+
+
+#THE END: add my bin to the top of PATH
+add_to_path $HOME/bin
 

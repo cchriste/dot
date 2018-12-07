@@ -23,6 +23,19 @@
 ;;cmake mode
 (require 'cmake-mode)
 
+;;markdown-mode (see https://jblevins.org/projects/markdown-mode/)
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(package-initialize)
+(autoload 'markdown-mode "markdown-mode"
+   "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(autoload 'gfm-mode "markdown-mode"
+   "Major mode for editing GitHub Flavored Markdown files" t)
+(add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+
 ;; don't ignore (ViSUS) .idx files for completion
 (setq completion-ignored-extensions (delete ".idx" completion-ignored-extensions))
 
@@ -64,8 +77,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(c-offsets-alist (quote ((arglist-intro . +) (arglist-cont c-lineup-gcc-asm-reg 0))))
- '(cc-search-directories (quote ("." "/usr/include" "/usr/local/include/*" "../../src" "../include/*")))
+ '(c-offsets-alist
+   (quote
+    ((arglist-intro . +)
+     (arglist-cont c-lineup-gcc-asm-reg 0))))
+ '(cc-search-directories
+   (quote
+    ("." "/usr/include" "/usr/local/include/*" "../../src" "../include/*")))
  '(compilation-skip-threshold 2)
  '(css-indent-offset 2)
  '(desktop-path (quote ("." "~/.emacs.d/" "~")))
@@ -90,8 +108,13 @@
  '(ns-command-modifier (quote meta))
  '(ns-right-alternate-modifier (quote super))
  '(nxml-sexp-element-flag t)
+ '(package-selected-packages (quote (markdown-mode)))
  '(partial-completion-mode nil)
- '(safe-local-variable-values (quote ((TeX-master . "proposal") (TeX-master . "paper") (TeX-master . "dynamic_remote_analysis"))))
+ '(safe-local-variable-values
+   (quote
+    ((TeX-master . "proposal")
+     (TeX-master . "paper")
+     (TeX-master . "dynamic_remote_analysis"))))
  '(savehist-mode t nil (savehist))
  '(scroll-down-aggressively 0.1)
  '(scroll-up-aggressively 0.1)
@@ -101,7 +124,9 @@
  '(tab-always-indent (quote complete))
  '(tab-width 2)
  '(tool-bar-mode nil)
- '(tramp-auto-save-directory "~/.emacs.d/autosave"))
+ '(tramp-auto-save-directory "~/.emacs.d/autosave")
+ '(x-meta-keysym (quote alt) t)
+ '(x-super-keysym (quote meta) t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -114,7 +139,8 @@
  '(font-lock-function-name-face ((t (:foreground "green" :weight bold))))
  '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "white"))))
  '(font-lock-string-face ((t (:foreground "light goldenrod"))))
- '(font-lock-variable-name-face ((t (:foreground "yellow")))))
+ '(font-lock-variable-name-face ((t (:foreground "yellow"))))
+ '(rst-level-1 ((t nil))))
 (put 'scroll-left 'disabled nil)
 
 ;;; Insert current date (from http://www.emacswiki.org/emacs/InsertDate)
@@ -414,11 +440,25 @@ prefer for `sh-mode'.  It is automatically added to
       (set-face-attribute 'default nil :font "-apple-Monaco-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"))))
 
 (when (string-prefix-p "gunship" (system-name))
-    (message "configuring for gunship...")
-    (custom-set-variables
-     '(x-meta-keysym (quote alt))
-     '(x-super-keysym (quote meta))
-     ))
+    (message "configuring for gunship (swapping meta and alt keys)...")
+    ;; with TweakUI Ctrl key "swap left alt with left ctrl" on SUSE, this has changed (first set of swaps takes care of it)
+    ;; I GIVE UP: can't remap ctrl on linux (though you can on OSX), so I'm just undoing swap-alt-ctrl setting
+    (if 0
+        (custom-set-variables
+         '(x-ctrl-keysym (quote alt))
+         '(x-alt-keysym (quote ctrl))
+         '(x-super-keysym (quote meta))
+         '(x-meta-keysym (quote ctrl) t)
+         '(x-hyper-keysym (quote meta) t)
+         )
+      (custom-set-variables
+       '(x-meta-keysym (quote alt))
+       '(x-super-keysym (quote meta))
+       ))
+  ;;for mercury: mac-control-modifier
+  ;;example here: http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
+)
+
 
 (put 'upcase-region 'disabled nil)
 

@@ -18,6 +18,7 @@ mv .gitconfig .gitconfig.$$.bak
 mv .gitignore .gitignore.$$.bak
 mv .screenrc .screenrc.$$.bak
 mv .Xresources .Xresources.$$.bak
+mv synergy.conf synergy.conf.$$.bak
 
 # symbolic link to new source-controlled dotfiles
 ln -s dot/emacs emacs
@@ -29,6 +30,7 @@ ln -s dot/.gitconfig .gitconfig
 ln -s dot/.gitignore .gitignore
 ln -s dot/.screenrc .screenrc
 ln -s dot/.Xresouces .Xresources
+ln -s dot/synergy.conf synergy.conf
 
 popd
 
