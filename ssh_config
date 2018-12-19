@@ -225,7 +225,7 @@ Host feedback
 
 Host cedmav7
     HostName cedmav7.sci.utah.edu
-    User visus
+    User cam
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/id_rsa
 

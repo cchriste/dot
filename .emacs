@@ -53,6 +53,7 @@
     (matlab-cedet-setup)
     ;;(setq matlab-shell-command-switches '("-nojvm"))
     ;;(setq matlab-shell-command-switches '("-nosplash"))
+    (global-set-key "\M-`" 'other-frame)
     ))
  ((string-equal system-type "gnu/linux") ; linux
   (progn
@@ -489,3 +490,8 @@ prefer for `sh-mode'.  It is automatically added to
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
+
+; insert date and a line underneath (since I do it all the time)
+(fset 'dateline
+   [?\C-u ?\C-u ?\C-c ?l return ?\M-2 ?\M-9 ?- return])
+;;(global-set-key (kbd "C-u C-u C-c l") 'dateline)  ; doesn't quite work, see emacs bookmarks for help

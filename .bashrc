@@ -182,6 +182,8 @@ fi
 source ~/bin/git-completion.bash
 source ~/bin/git-prompt.sh
 #export PS1='[\u@\h \W$(__git_ps1 " (%s)")] '$PS1
+export PS1="$(__git_ps1 "(%s)") $PS1"
+
 
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -218,7 +220,8 @@ fi
 #...
 
 #ANACONDA (we like Anaconda, but it can sometimes interfere)
-ENABLE_ANACONDA=1
+ANACONDA_ENABLE=1
+ANACONDA_PYTHON2=0  #python3 is default, set this to override
 if [ -f ~/bin/start_anaconda.sh ]; then
     . ~/bin/start_anaconda.sh
 fi

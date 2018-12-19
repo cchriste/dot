@@ -18,4 +18,5 @@
 
 # HOWTO: run `dircolors -p` to get the default list, then you only have to add a few customizations here
 
-DIR 01;37 # directory
+LINK 00;37 # symlink
+DIR 01;33 # directory
