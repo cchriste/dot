@@ -109,7 +109,7 @@
  '(ns-command-modifier (quote meta))
  '(ns-right-alternate-modifier (quote super))
  '(nxml-sexp-element-flag t)
- '(package-selected-packages (quote (markdown-mode)))
+ '(package-selected-packages (quote (s markdown-mode)))
  '(partial-completion-mode nil)
  '(safe-local-variable-values
    (quote
@@ -126,7 +126,10 @@
  '(tab-width 2)
  '(tool-bar-mode nil)
  '(tramp-auto-save-directory "~/.emacs.d/autosave")
- '(x-meta-keysym (quote alt) t)
+ '(x-alt-keysym (quote ctrl) t)
+ '(x-ctrl-keysym (quote alt))
+ '(x-hyper-keysym (quote meta) t)
+ '(x-meta-keysym (quote ctrl) t)
  '(x-super-keysym (quote meta) t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -492,6 +495,15 @@ prefer for `sh-mode'.  It is automatically added to
 (package-initialize)
 
 ; insert date and a line underneath (since I do it all the time)
+; TODO: get the text of the C-c l command, add the line to it, and insert as a single action. That way, undo will remove all of it
 (fset 'dateline
    [?\C-u ?\C-u ?\C-c ?l return ?\M-2 ?\M-9 ?- return])
-;;(global-set-key (kbd "C-u C-u C-c l") 'dateline)  ; doesn't quite work, see emacs bookmarks for help
+(global-set-key (kbd "C-c k") 'dateline)
+
+; s.el (required by dockerfile-mode)
+(add-to-list 'load-path "emacs/s.el")
+
+; dockerfile mode
+(add-to-list 'load-path "emacs/dockerfile-mode/")
+(require 'dockerfile-mode)
+(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
