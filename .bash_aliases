@@ -7,6 +7,7 @@ alias ll='ls -alFhG'
 alias df='df -H'
 alias du='du -h'
 alias hgstat='hg status | grep -Ev \(\\?\|\\!\)'
+alias diff='diff -u'
 
 # enable color support of ls and also add handy aliases
 # 30.10.2018 - customized to first set defaults and then add customizations from ~/.dircolors
