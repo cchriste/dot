@@ -108,6 +108,13 @@ Host githubtaranaki
     IdentitiesOnly yes
     # IdentitiesOnly needed to prevent id_rsa from being tried first, see https://stackoverflow.com/questions/4565700/specify-private-ssh-key-to-use-when-executing-shell-command-with-or-without-ruby
 
+#from aims2.llnl.gov, and for the record this is the method I most appreciate since I can keep using github.com, but not sure how to share it between hosts in this ssh_config.
+# Host github.com
+#     HostName github.com
+#     PreferredAuthentications publickey
+#     IdentityFile ~/.ssh/github-aims2
+#     IdentitiesOnly yes
+
 # Host pcmdi11
 #     HostName pcmdi11.llnl.gov
 #     PreferredAuthentications publickey

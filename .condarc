@@ -1,0 +1,7 @@
+changeps1: true
+anaconda_upload: false
+ssl_verify: true
+channels:
+  - anaconda-fusion
+  - defaults
+auto_activate_base: true

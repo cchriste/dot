@@ -1,3 +1,6 @@
+#debug startup
+#set -x
+
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -58,7 +61,6 @@ add_to_path /opt/VirtualGL/bin
 add_to_path /usr/local/cuda/bin
 
 # OSX-specific additions
-#if [ `hostname | cut -f1 -d "."` = mercury ]; then
 if [ `uname` = Darwin ]; then
   #echo "Including OSX-specific configuration..."
 
@@ -86,9 +88,6 @@ if [ `uname` = Darwin ]; then
   #QT
   add_to_path /Developer/qt5/5.7/clang_64/bin
 
-  #LATEX
-  add_to_path /usr/local/texlive/2013/bin/x86_64-darwin
-
   #MATLAB
   add_to_path /Applications/MATLAB_R2015a.app/bin
   export MATLAB_JAVA="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
@@ -102,6 +101,18 @@ if [ `uname` = Darwin ]; then
   #implicit on suse linux, but maybe needed on osx (todo: verify)
   #TODO: test this
   add_to_path /usr/local/bin
+
+  #LATEX
+  if [ `hostname | cut -f1 -d "."` = mercury ]; then
+    # 2013 full version
+    add_to_path /usr/local/texlive/2013/bin/x86_64-darwin
+  else
+    # 2019basic from https://www.tug.org/mactex/morepackages.html since the conda version wouldn't work
+    add_to_path /usr/local/texlive/2019basic/bin/x86_64-darwin
+
+    # Also... How to install your own .sty packages:
+    #  https://tex.stackexchange.com/questions/1137/where-do-i-place-my-own-sty-or-cls-files-to-make-them-available-to-all-my-te
+  fi
 fi
 
 #linux-specific additions
@@ -178,11 +189,12 @@ if [ -f ~/dot/.bash_prompt ]; then
     . ~/dot/.bash_prompt
 fi
 
-#GIT
+#GIT 
 source ~/bin/git-completion.bash
-source ~/bin/git-prompt.sh
+#**disabled prompt since it doesn't update when you change directories/branches
+#source ~/bin/git-prompt.sh 
 #export PS1='[\u@\h \W$(__git_ps1 " (%s)")] '$PS1
-export PS1="$(__git_ps1 "(%s)") $PS1"
+#export PS1="$(__git_ps1 "[%s]") $PS1"
 
 
 # colored GCC warnings and errors
@@ -220,15 +232,17 @@ fi
 #...
 
 #ANACONDA (we like Anaconda, but it can sometimes interfere)
-ANACONDA_ENABLE=1
+if [ -z $ANACONDA_ENABLE ]; then
+  ANACONDA_ENABLE=1
+fi
 ANACONDA_PYTHON2=0  #python3 is default, set this to override
+ANACONDA_MINI=1     #todo: find a way not to have to hardcode this
 if [ -f ~/bin/start_anaconda.sh ]; then
     . ~/bin/start_anaconda.sh
 fi
 
-
-
+#DOCKER bash completion (but it still doesn't work...)
+#. ~/bin/docker-compose.sh
 
 #THE END: add my bin to the top of PATH
 add_to_path $HOME/bin
-

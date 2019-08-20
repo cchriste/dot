@@ -7,6 +7,9 @@
 # .profile for terminal OSX sessions.
 #
 
+#set -x
+#echo "************* .profile *************"
+
 # EDITOR (Emacs takes too long to startup to be used as EDITOR)
 export EDITOR=vim
 
@@ -28,3 +31,5 @@ fi
 if [ "$BASH" ]; then
     . ~/.bashrc
 fi
+
+

@@ -287,9 +287,6 @@
 (add-to-list 'desktop-globals-to-save 'c-basic-offset)
 (add-to-list 'desktop-globals-to-save 'c-offsets-alist)
 
-;; rst-mode
-(add-to-list 'auto-mode-alist '("\\.md" . rst-mode))
-
 ;; Discovered macros to use with:
 ;; (read-kbd-macro "C-c <left>")
 ;; You can use view-lossage to see what to put in the quotes.
@@ -501,9 +498,9 @@ prefer for `sh-mode'.  It is automatically added to
 (global-set-key (kbd "C-c k") 'dateline)
 
 ; s.el (required by dockerfile-mode)
-(add-to-list 'load-path "emacs/s.el")
+(add-to-list 'load-path "~/emacs/s.el")
 
 ; dockerfile mode
-(add-to-list 'load-path "emacs/dockerfile-mode/")
+(add-to-list 'load-path "~/emacs/dockerfile-mode/")
 (require 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
