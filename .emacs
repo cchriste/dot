@@ -109,7 +109,7 @@
  '(ns-command-modifier (quote meta))
  '(ns-right-alternate-modifier (quote super))
  '(nxml-sexp-element-flag t)
- '(package-selected-packages (quote (s markdown-mode)))
+ '(package-selected-packages (quote (xref-js2 js2-refactor s markdown-mode)))
  '(partial-completion-mode nil)
  '(safe-local-variable-values
    (quote
@@ -324,9 +324,12 @@
           'my-python-customizations)
 (defun my-python-customizations ()
   "set up my personal customizations for python mode"
+  (message "setting my python customizations...")
   (setq python-indent 4)
   (local-unset-key (kbd "C-c C-c"))
-  (local-set-key "\C-c\C-c" 'comment-region))
+  (local-set-key "\C-c\C-c" 'comment-region)
+  (setq tab-width 4)
+  (setq indent-tabs-mode 1))
 
 ;; Latex Hook
 (add-hook 'latex-mode-hook
@@ -475,11 +478,16 @@ prefer for `sh-mode'.  It is automatically added to
         (save-excursion (newline) (princ gather-dups (current-buffer)))
       gather-dups)))
 
+;;dired
 (defun file-info ()
   (interactive)
   (let ((dired-listing-switches "-alh"))
     (dired-other-window buffer-file-name)))
 (global-set-key (kbd "C-c i") 'file-info)
+
+(add-hook 'dired-mode-hook
+          (lambda nil
+            (define-key dired-do-query-replace-regexp "Q" 'dired-do-query-replace-regexp))
 
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
@@ -504,3 +512,32 @@ prefer for `sh-mode'.  It is automatically added to
 (add-to-list 'load-path "~/emacs/dockerfile-mode/")
 (require 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
+
+
+; --- javascript --- (see https://emacs.cafe/emacs/javascript/setup/2017/04/23/emacs-setup-javascript.html)
+; (need to install js2-mode, js2-refactor, xref-js2 using M-x package-install RET <name>)
+; also: conda install -c anaconda the-silver-searcher 
+(require 'js2-mode)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+;; Better imenu
+(add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+
+;; js "tags"
+(require 'js2-refactor)
+(require 'xref-js2)
+
+(add-hook 'js2-mode-hook #'js2-refactor-mode)
+(js2r-add-keybindings-with-prefix "C-c C-r")
+(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+
+;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
+;; unbind it.
+(define-key js-mode-map (kbd "M-.") nil)
+
+(add-hook 'js2-mode-hook
+          (lambda ()
+            (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+
+; --- /javascript --- 
+

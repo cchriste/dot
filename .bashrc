@@ -86,7 +86,7 @@ if [ `uname` = Darwin ]; then
   add_to_path "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin"
 
   #QT
-  add_to_path /Developer/qt5/5.7/clang_64/bin
+  add_to_path $HOME/tools/Qt5.13.0/5.13.0/clang_64/bin
 
   #MATLAB
   add_to_path /Applications/MATLAB_R2015a.app/bin
@@ -233,12 +233,13 @@ fi
 
 #ANACONDA (we like Anaconda, but it can sometimes interfere)
 if [ -z $ANACONDA_ENABLE ]; then
+  echo "Enabling Anaconda..."
   ANACONDA_ENABLE=1
 fi
 ANACONDA_PYTHON2=0  #python3 is default, set this to override
 ANACONDA_MINI=1     #todo: find a way not to have to hardcode this
 if [ -f ~/bin/start_anaconda.sh ]; then
-    . ~/bin/start_anaconda.sh
+  . ~/bin/start_anaconda.sh
 fi
 
 #DOCKER bash completion (but it still doesn't work...)
@@ -246,3 +247,4 @@ fi
 
 #THE END: add my bin to the top of PATH
 add_to_path $HOME/bin
+

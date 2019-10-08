@@ -4,4 +4,4 @@ ssl_verify: true
 channels:
   - anaconda-fusion
   - defaults
-auto_activate_base: true
+auto_activate_base: false
