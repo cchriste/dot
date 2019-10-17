@@ -487,7 +487,7 @@ prefer for `sh-mode'.  It is automatically added to
 
 (add-hook 'dired-mode-hook
           (lambda nil
-            (define-key dired-do-query-replace-regexp "Q" 'dired-do-query-replace-regexp))
+            (define-key dired-do-query-replace-regexp "Q" 'dired-do-query-replace-regexp)))
 
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))

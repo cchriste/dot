@@ -125,8 +125,8 @@ if [ `uname` = Linux ]; then
   #openmpi (should be handled by mpi-selector, but isn't working; also note mvapich2 install in gcc/mvapich2)
   add_to_path "/usr/lib64/mpi/gcc/openmpi/bin"
 
-  #QT
-  #should already be in /usr/bin
+  #QT (gunship as of 2019.10.17)
+  add_to_path $HOME/tools/Qt5.13.1/5.13.1/gcc_64/bin
 fi
 
 #GO (for google codesearch)
